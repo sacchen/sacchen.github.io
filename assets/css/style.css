@@ -1,0 +1,75 @@
+/* --- A More Modern Font (Optional but Recommended) --- */
+/*
+  For a better look, you can add a Google Font. Go to fonts.google.com, 
+  choose a serif font like "Lora", and add its <link> tag to the <head>
+  of your _layouts/default.html file. Then you can use it here.
+  Example: font-family: 'Lora', serif;
+*/
+
+/* --- Container for general pages like the homepage --- */
+.page-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+  }
+
+
+/* --- Main Post Container --- */
+.post-container {
+    max-width: 700px; /* Sets the width of the content area */
+    margin: 2rem auto; /* Centers the container on the page */
+    padding: 0 2rem; /* Adds some space on the sides */
+  }
+  
+  /* --- Post Article Styling --- */
+  .post-article {
+    font-family: 'Times New Roman', Times, serif; /* Sets the classic serif font */
+    color: #333; /* A dark gray for text is easier on the eyes than pure black */
+  }
+  
+  /* --- Post Header Styling --- */
+  .post-header {
+    border-bottom: 1px solid #ccc; /* A line under the header */
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .post-meta {
+    display: flex;
+    justify-content: space-between; /* Puts one item left, one right */
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+  
+  .post-title {
+    text-align: center;
+    font-size: 2.2em;
+    margin-bottom: 0.5rem;
+  }
+  
+  .post-author {
+    text-align: center;
+    font-size: 1em;
+    color: #666;
+    margin-top: 0;
+  }
+  
+  /* --- Main Post Content --- */
+  .post-content {
+    text-align: justify; /* Justifies the text to both margins */
+    line-height: 1.7; /* Improves readability */
+    font-size: 1.1em;
+  }
+  
+  .post-content h2, .post-content h3 {
+    text-align: left; /* Keep headings left-aligned */
+  }
+  
+  /* --- Post Footer Styling --- */
+  .post-footer {
+    text-align: right;
+    margin-top: 3rem;
+    font-size: 0.9em;
+    color: #999;
+  }
