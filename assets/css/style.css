@@ -1,76 +1,96 @@
-/* --- A More Modern Font (Optional but Recommended) --- */
-/*
-  For a better look, you can add a Google Font. Go to fonts.google.com, 
-  choose a serif font like "Lora", and add its <link> tag to the <head>
-  of your _layouts/default.html file. Then you can use it here.
-  Example: font-family: 'Lora', serif;
-*/
-
-/* --- Container for general pages like the homepage --- */
-.page-container {
+/* --- General Body & Font Styling --- */
+body {
+    /* We set a base font here, but specify it more directly on the container below */
+    font-family: Georgia, 'Times New Roman', Times, serif; /* UPDATED: Added Georgia as a fallback */
+    color: #333;
+    line-height: 1.6;
+    background-color: #fdfdfd;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* --- A More Modern Font (Optional but Recommended) --- */
+  /*
+    For a cleaner, more modern look on screens, you can add a Google Font. 
+    1. Go to fonts.google.com and choose a serif font like "Lora" or "Merriweather".
+    2. Get the <link> tag and add it to the <head> of your _layouts/default.html file. 
+    3. Uncomment the line below and replace 'Lora' if you chose a different font.
+  */
+  /* body { font-family: 'Lora', serif; } */
+  
+  
+  /* --- Main Container for Posts --- */
+  /* This centers your content and sets its maximum width. */
+  .post-container {
+    font-family: Georgia, 'Times New Roman', Times, serif; /* UPDATED: Added Georgia for better serif rendering. */
     max-width: 700px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-  }
-
-
-/* --- Main Post Container --- */
-.post-container {
-    max-width: 700px; /* Sets the width of the content area */
-    margin: 2rem auto; /* Centers the container on the page */
-    padding: 0 2rem; /* Adds some space on the sides */
+    margin: 3rem auto;
+    padding: 1rem 2rem;
   }
   
-  /* --- Post Article Styling --- */
-  .post-article {
-    font-family: 'Times New Roman', Times, serif; /* Sets the classic serif font */
-    color: #333; /* A dark gray for text is easier on the eyes than pure black */
-  }
   
-
   /* --- Post Header Styling --- */
-    .post-header {
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 1rem;
+  /* Contains the title, author, and date. */
+  .post-header {
+    border-bottom: 1px solid #ccc; /* The horizontal line below the header block. */
+    padding-bottom: 1rem;           /* Space between the text and the new line. */
     margin-bottom: 2rem;
   }
   
-    .post-meta {
-    display: flex;
-    justify-content: space-between;
+  .post-title {
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: left;
+    margin: 0;
+    line-height: 1.2;
+  }
+  
+  .post-author {
+    font-size: 1.1em;
+    color: #555;
+    text-align: left;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+  }
+  
+  .post-meta {
     font-size: 0.9em;
     color: #666;
-    margin-bottom: 2rem;
+    margin-top: 0.5rem;
+    text-align: left;
   }
   
-    .post-title {
-    text-align: left; /* This is the line we changed */
-    font-size: 2.2em;
-    margin-bottom: 0.5rem;
-  }
-  
-    .post-author {
-    text-align: left; /* Changed this for consistency */
-    font-size: 1em;
-    color: #666;
-    margin-top: 0;
-  }
   
   /* --- Main Post Content --- */
   .post-content {
-    text-align: justify; /* Justifies the text to both margins */
-    line-height: 1.7; /* Improves readability */
     font-size: 1.1em;
+    line-height: 1.7;
+    text-align: justify;
   }
   
-  .post-content h2, .post-content h3 {
-    text-align: left; /* Keep headings left-aligned */
+  .post-content h1, .post-content h2, .post-content h3, .post-content h4 {
+    text-align: left;
+    margin-top: 2rem;
+    font-weight: bold;
   }
   
-  /* --- Post Footer Styling --- */
-  .post-footer {
-    text-align: right;
-    margin-top: 3rem;
-    font-size: 0.9em;
-    color: #999;
+  .post-content blockquote {
+    border-left: 3px solid #ccc;
+    padding-left: 1.5rem;
+    margin-left: 0;
+    font-style: italic;
+    color: #666;
   }
+  
+  .post-content a {
+    color: #0056b3;
+    text-decoration: none;
+    border-bottom: 1px dotted #0056b3;
+  }
+  
+  .post-content a:hover {
+    color: #003d80;
+    border-bottom-style: solid;
+  }
+  
+  
