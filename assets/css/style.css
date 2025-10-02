@@ -1,96 +1,160 @@
-/* --- General Body & Font Styling --- */
-body {
-    /* We set a base font here, but specify it more directly on the container below */
-    font-family: Georgia, 'Times New Roman', Times, serif; /* UPDATED: Added Georgia as a fallback */
+/*
+ * ===================================================================
+ * FINAL UNIFIED STYLESHEET FOR JEKYLL BLOG
+ * This file combines all styles needed for the Markdown PDF look.
+ * ===================================================================
+ */
+
+/* --- 1. Main Layout & Site Header Styles --- */
+
+.container {
+    max-width: 800px; /* A good readable width for the content */
+    margin: 0 auto;   /* This centers the container on the page */
+    padding: 20px;    /* Adds some space around the content */
+  }
+  
+  .site-header {
+    margin-bottom: 40px; /* Adds space between the site header and post content */
+  }
+  
+  /* Style the main site title in the header differently from post titles */
+  .site-header h1 {
+    border-bottom: none; /* Remove the bottom border from the main site title */
+    font-size: 2em;
+    font-weight: bold; /* Make the site title bold */
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Make sure the site title link isn't styled like a normal content link */
+  .site-header h1 a {
     color: #333;
-    line-height: 1.6;
-    background-color: #fdfdfd;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* --- A More Modern Font (Optional but Recommended) --- */
-  /*
-    For a cleaner, more modern look on screens, you can add a Google Font. 
-    1. Go to fonts.google.com and choose a serif font like "Lora" or "Merriweather".
-    2. Get the <link> tag and add it to the <head> of your _layouts/default.html file. 
-    3. Uncomment the line below and replace 'Lora' if you chose a different font.
-  */
-  /* body { font-family: 'Lora', serif; } */
-  
-  
-  /* --- Main Container for Posts --- */
-  /* This centers your content and sets its maximum width. */
-  .post-container {
-    font-family: Georgia, 'Times New Roman', Times, serif; /* UPDATED: Added Georgia for better serif rendering. */
-    max-width: 700px;
-    margin: 3rem auto;
-    padding: 1rem 2rem;
-  }
-  
-  
-  /* --- Post Header Styling --- */
-  /* Contains the title, author, and date. */
-  .post-header {
-    border-bottom: 1px solid #ccc; /* The horizontal line below the header block. */
-    padding-bottom: 1rem;           /* Space between the text and the new line. */
-    margin-bottom: 2rem;
-  }
-  
-  .post-title {
-    font-size: 2.5em;
-    font-weight: bold;
-    text-align: left;
-    margin: 0;
-    line-height: 1.2;
-  }
-  
-  .post-author {
-    font-size: 1.1em;
-    color: #555;
-    text-align: left;
-    margin-top: 0.5rem;
-    margin-bottom: 0;
-  }
-  
-  .post-meta {
-    font-size: 0.9em;
-    color: #666;
-    margin-top: 0.5rem;
-    text-align: left;
-  }
-  
-  
-  /* --- Main Post Content --- */
-  .post-content {
-    font-size: 1.1em;
-    line-height: 1.7;
-    text-align: justify;
-  }
-  
-  .post-content h1, .post-content h2, .post-content h3, .post-content h4 {
-    text-align: left;
-    margin-top: 2rem;
-    font-weight: bold;
-  }
-  
-  .post-content blockquote {
-    border-left: 3px solid #ccc;
-    padding-left: 1.5rem;
-    margin-left: 0;
-    font-style: italic;
-    color: #666;
-  }
-  
-  .post-content a {
-    color: #0056b3;
     text-decoration: none;
-    border-bottom: 1px dotted #0056b3;
   }
   
-  .post-content a:hover {
-    color: #003d80;
-    border-bottom-style: solid;
+  /* Style the navigation links */
+  .site-header nav a {
+    margin-right: 15px;
+    color: #555;
   }
   
   
+  /* --- 2. "Markdown PDF" Content Styles --- */
+  /* These styles apply to the content rendered from your Markdown files. */
+  
+  body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+      font-size: 14px;
+      line-height: 22px;
+      word-wrap: break-word;
+      color: #333;
+      background-color: #fff;
+      margin: 0;
+  }
+  
+  img {
+      max-width: 100%;
+      max-height: 100%;
+  }
+  
+  a {
+      color: #007acc; /* A standard link color */
+      text-decoration: none;
+  }
+  
+  a:hover {
+      text-decoration: underline;
+  }
+  
+  hr {
+      border: 0;
+      height: 2px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.18);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+      font-weight: normal;
+  }
+  
+  h1 {
+      padding-bottom: 0.3em;
+      line-height: 1.2;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  }
+  
+  blockquote {
+      margin: 0 7px 0 5px;
+      padding: 0 16px 0 10px;
+      border-left: 5px solid rgba(0, 122, 204, 0.5);
+      background: rgba(127, 127, 127, 0.1);
+  }
+  
+  table {
+      border-collapse: collapse;
+  }
+  
+  table > thead > tr > th {
+      text-align: left;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.69);
+  }
+  
+  table > thead > tr > th,
+  table > thead > tr > td,
+  table > tbody > tr > th,
+  table > tbody > tr > td {
+      padding: 5px 10px;
+  }
+  
+  table > tbody > tr + tr > td {
+      border-top: 1px solid rgba(0, 0, 0, 0.18);
+  }
+  
+  .emoji {
+      height: 1.4em;
+  }
+  
+  /* --- 3. Code Block & Syntax Highlighting Styles --- */
+  
+  /* Base styles for all code elements */
+  code {
+      font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+      font-size: 14px;
+      line-height: 19px;
+  }
+  
+  /* Style for multi-line code blocks */
+  pre {
+      background-color: #f8f8f8;
+      border: 1px solid #cccccc;
+      border-radius: 3px;
+      overflow-x: auto;
+      padding: 16px;
+      line-height: 1.357em;
+  }
+  
+  pre code {
+      color: inherit;
+      background-color: transparent;
+      font-size: 1em;
+      border-radius: 0;
+      padding: 0;
+  }
+  
+  /* Style for inline code snippets (e.g., `code`) */
+  :not(pre) > code {
+      color: #C9AE75;
+      font-size: 0.9em;
+      background-color: #f8f8f8;
+      border-radius: 3px;
+      padding: 2px 4px;
+  }
+  
+  /* Tomorrow Theme for Highlight.js (used by .hljs class) */
+  .hljs {
+      display: block;
+      overflow-x: auto;
+      color: #4d4d4c;
+  }
+  
+  .hljs-comment,
+  .hljs-quote {
+      color: #8e908
