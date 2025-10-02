@@ -27,29 +27,30 @@
     color: #333; /* A dark gray for text is easier on the eyes than pure black */
   }
   
+
   /* --- Post Header Styling --- */
-  .post-header {
-    border-bottom: 1px solid #ccc; /* A line under the header */
+    .post-header {
+    border-bottom: 1px solid #ccc;
     padding-bottom: 1rem;
     margin-bottom: 2rem;
   }
   
-  .post-meta {
+    .post-meta {
     display: flex;
-    justify-content: space-between; /* Puts one item left, one right */
+    justify-content: space-between;
     font-size: 0.9em;
     color: #666;
     margin-bottom: 2rem;
   }
   
-  .post-title {
-    text-align: center;
+    .post-title {
+    text-align: left; /* This is the line we changed */
     font-size: 2.2em;
     margin-bottom: 0.5rem;
   }
   
-  .post-author {
-    text-align: center;
+    .post-author {
+    text-align: left; /* Changed this for consistency */
     font-size: 1em;
     color: #666;
     margin-top: 0;
