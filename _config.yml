@@ -1,0 +1,4 @@
+title: Samuel's Blog
+
+# permalink setting for URL structure
+permalink: /blog/:title/
