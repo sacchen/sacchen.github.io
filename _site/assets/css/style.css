@@ -40,15 +40,16 @@
   
   /* --- 2. "Markdown PDF" Content Styles --- */
   /* These styles apply to the content rendered from your Markdown files. */
-  
+
   body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
-      font-size: 14px;
-      line-height: 22px;
-      word-wrap: break-word;
-      color: #333;
-      background-color: #fff;
-      margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+    /* UPDATED: Using the more conservative Option 1 for font size */
+    font-size: clamp(15px, 1rem + 0.4vw, 18px); 
+    line-height: 1.6; 
+    word-wrap: break-word;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
   }
   
   img {
@@ -76,9 +77,11 @@
   }
   
   h1 {
-      padding-bottom: 0.3em;
-      line-height: 1.2;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+    /* UPDATED: Slightly increased the relative size to ensure it still stands out */
+    font-size: 2.4em; 
+    padding-bottom: 0.3em;
+    line-height: 1.2;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.18);
   }
   
   blockquote {
@@ -116,10 +119,11 @@
   
   /* Base styles for all code elements */
   code {
-      font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
-      font-size: 14px;
-      line-height: 19px;
-  }
+    font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+    /* UPDATED: Font size is now slightly smaller than the body text */
+    font-size: 0.9em; 
+    /* The line-height will be inherited, which is what we want. */
+}
   
   /* Style for multi-line code blocks */
   pre {
