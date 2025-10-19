@@ -15,3 +15,5 @@ When you complain, "But I want to know a human wrote it," you're asking the wron
 Nothing would have happened without you. Sure, the screenwriter wrote the script, but who directed it and put it together? When I force myself to not use AI and become helpless, I fear I am losing the fundamental skill of creating something from nothing. But this fear only exists when we refuse help. When we shift to the perspective of providing value, we become the architect doing everything it takes to make it happen. Your work becomes the sum of your choices: your drive to make it happen, you drawing the lifeblood out of you, and your taste and discernment in the final product. 
 
 Of course, this only applies right now. We exist in a narrow window of time where AIs can help us write better, and we can still improve the writings of AI. This may not always be the case. In the future, AI could write better than you ever can. But for now, do whatever it takes to make an impact on your reader.
+
+test test
