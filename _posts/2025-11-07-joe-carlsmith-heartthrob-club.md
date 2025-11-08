@@ -14,7 +14,8 @@ We believe that reacting to rigorous, foundational work is the best way to devel
 
 We are low-overhead, interactive, and built for busy schedules. 
 - **Format:** We meet once every two weeks to discuss one essay or section.
-- **60min Structure:** - First half to (re-)read the assigned text so we're all ready for discussion.
+- **60min Structure:**
+    - First half to (re-)read the assigned text so we're all ready for discussion.
     - Second half of discussion to break down arguments, assumptions, and explore our own ideas.
 
 ## Reading list
