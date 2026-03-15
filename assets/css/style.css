@@ -5,6 +5,40 @@
  * ===================================================================
  */
 
+/* --- 0. Self-hosted Fonts --- */
+
+@font-face {
+  font-family: "iA Writer Quattro S";
+  src: url("/assets/fonts/iAWriterQuattroS-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "iA Writer Quattro S";
+  src: url("/assets/fonts/iAWriterQuattroS-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "iA Writer Quattro S";
+  src: url("/assets/fonts/iAWriterQuattroS-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "iA Writer Quattro S";
+  src: url("/assets/fonts/iAWriterQuattroS-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* --- 1. Main Layout & Site Header Styles --- */
 
 .container {
@@ -42,7 +76,7 @@
   /* These styles apply to the content rendered from your Markdown files. */
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+    font-family: -apple-system, BlinkMacSystemFont, "iA Writer Quattro S", "Segoe UI", sans-serif;
     /* UPDATED: Using the more conservative Option 1 for font size */
     font-size: clamp(15px, 1rem + 0.4vw, 18px); 
     line-height: 1.6; 
