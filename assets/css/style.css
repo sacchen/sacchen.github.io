@@ -205,12 +205,95 @@
 }
 
 /* Tomorrow Theme for Highlight.js (used by .hljs class) */
-  .hljs {
-      display: block;
-      overflow-x: auto;
-      color: #4d4d4c;
-  }
-  
-  .hljs-comment,
-  .hljs-quote {
-      color: #8e908
+.hljs {
+    display: block;
+    overflow-x: auto;
+    color: #4d4d4c;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #8e908c;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+    color: #c82829;
+}
+
+.hljs-number,
+.hljs-built_in,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+    color: #f5871f;
+}
+
+.hljs-attribute {
+    color: #eab700;
+}
+
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+    color: #718c00;
+}
+
+.hljs-title,
+.hljs-section {
+    color: #4271ae;
+}
+
+.hljs-keyword,
+.hljs-selector-tag {
+    color: #8959a8;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+
+/* --- Post styles --- */
+.post-header {
+    margin-bottom: 2rem;
+}
+
+.post-title {
+    margin-bottom: 0.25rem;
+}
+
+.post-author,
+.post-date {
+    font-size: 0.9em;
+    color: #777;
+    font-weight: normal;
+    margin: 0.1rem 0;
+}
+
+.post-content {
+    margin-top: 2rem;
+}
+
+/* --- Project list --- */
+.project-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.project-list li {
+    padding: 0.3rem 0;
+}

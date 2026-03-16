@@ -1,4 +1,5 @@
 title: Samuel's Blog
+description: writing, projects, vibes
 
 # permalink setting for URL structure
 permalink: /blog/:title/
