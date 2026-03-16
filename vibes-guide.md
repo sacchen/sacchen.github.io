@@ -2,11 +2,7 @@
 
 ## Setup (one-time)
 
-```
-pip3 install pillow pillow-heif
-```
-
-`pillow-heif` is optional — only needed for `.heic`/`.heif` images.
+None — uses `uv` to manage dependencies inline.
 
 ## Adding images
 
@@ -22,7 +18,7 @@ pip3 install pillow pillow-heif
 
 3. Regenerate the metadata JSON:
    ```
-   python3 lister.py
+   uv run --with pillow lister.py
    ```
 
 4. Commit everything together:

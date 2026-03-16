@@ -7,7 +7,7 @@ Merge optional URL metadata from vibes_sources.yml:
   bar.png: https://another.com
 
 Requirements:
-  pip3 install pillow pillow-heif
+  uv run --with pillow lister.py
 """
 
 import json
@@ -17,7 +17,7 @@ from pathlib import Path
 try:
     from PIL import Image
 except ImportError:
-    sys.exit("pillow not found — run: pip3 install pillow pillow-heif")
+    sys.exit("pillow not found — run: uv run --with pillow lister.py")
 
 try:
     import pillow_heif
