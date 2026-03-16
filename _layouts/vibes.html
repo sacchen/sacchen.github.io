@@ -19,14 +19,15 @@ layout: default
     );
   }
 
-  function tryPlace(img, placed, canvasW) {
+  function tryPlace(img, placed, canvasW, maxBottom) {
     var w = img.displayW;
     var h = img.displayH;
     var maxX = Math.max(0, canvasW - w);
+    var yRange = Math.max(maxBottom + h + PADDING, h * 2);
     var attempts = 600;
     for (var i = 0; i < attempts; i++) {
       var x = Math.floor(Math.random() * (maxX + 1));
-      var y = Math.floor(Math.random() * 6000);
+      var y = Math.floor(Math.random() * yRange);
       var candidate = { x: x, y: y, w: w, h: h };
       var ok = true;
       for (var j = 0; j < placed.length; j++) {
@@ -65,7 +66,7 @@ layout: default
       var maxBottom = 0;
 
       data.forEach(function (item) {
-        var pos = tryPlace(item, placed, canvasW);
+        var pos = tryPlace(item, placed, canvasW, maxBottom);
         if (!pos) return;
         placed.push(pos);
         if (pos.y + pos.h > maxBottom) maxBottom = pos.y + pos.h;
