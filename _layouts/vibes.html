@@ -7,7 +7,7 @@ layout: default
 (function () {
   var DATA_URL = "/assets/vibes/image_widths_heights.json";
   var IMG_BASE = "/assets/vibes/";
-  var DISPLAY_WIDTH = 650;
+  var DISPLAY_WIDTH = 320;
   var PADDING = 8;
 
   function rectsOverlap(a, b) {
@@ -26,7 +26,7 @@ layout: default
     var attempts = 600;
     for (var i = 0; i < attempts; i++) {
       var x = Math.floor(Math.random() * (maxX + 1));
-      var y = Math.floor(Math.random() * 2400);
+      var y = Math.floor(Math.random() * 6000);
       var candidate = { x: x, y: y, w: w, h: h };
       var ok = true;
       for (var j = 0; j < placed.length; j++) {
