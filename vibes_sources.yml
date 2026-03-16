@@ -1,0 +1,7 @@
+# Map vibes image filenames to their source URLs.
+# Images listed here will be clickable links on the vibes page.
+# After editing, run: python3 lister.py
+#
+# Example:
+#   foo.png: https://example.com
+#   bar.jpg: https://another.com

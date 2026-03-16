@@ -186,7 +186,28 @@
       padding: 2px 4px;
   }
   
-  /* Tomorrow Theme for Highlight.js (used by .hljs class) */
+  /* --- Wide container --- */
+.container-wide {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* --- Vibes page --- */
+#vibes-canvas {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+#vibes-canvas img {
+  position: absolute;
+  cursor: pointer;
+  display: block;
+  border: none;
+}
+
+/* Tomorrow Theme for Highlight.js (used by .hljs class) */
   .hljs {
       display: block;
       overflow-x: auto;

@@ -6,6 +6,9 @@ title: Home
 # Welcome to My Blog
 
 ## Latest Posts
+<a href="/vibes/">Vibes →</a>
+
+---
 <ul>
   {% for post in site.posts %}
     <li>

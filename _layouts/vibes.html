@@ -1,0 +1,102 @@
+---
+layout: default
+---
+<div id="vibes-canvas"></div>
+
+<script>
+(function () {
+  var DATA_URL = "/assets/vibes/image_widths_heights.json";
+  var IMG_BASE = "/assets/vibes/";
+  var DISPLAY_WIDTH = 320;
+  var PADDING = 8;
+
+  function rectsOverlap(a, b) {
+    return !(
+      a.x + a.w + PADDING <= b.x ||
+      b.x + b.w + PADDING <= a.x ||
+      a.y + a.h + PADDING <= b.y ||
+      b.y + b.h + PADDING <= a.y
+    );
+  }
+
+  function tryPlace(img, placed, canvasW) {
+    var w = img.displayW;
+    var h = img.displayH;
+    var maxX = Math.max(0, canvasW - w);
+    var attempts = 600;
+    for (var i = 0; i < attempts; i++) {
+      var x = Math.floor(Math.random() * (maxX + 1));
+      var y = Math.floor(Math.random() * 2400);
+      var candidate = { x: x, y: y, w: w, h: h };
+      var ok = true;
+      for (var j = 0; j < placed.length; j++) {
+        if (rectsOverlap(candidate, placed[j])) {
+          ok = false;
+          break;
+        }
+      }
+      if (ok) return candidate;
+    }
+    return null;
+  }
+
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  fetch(DATA_URL)
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var canvas = document.getElementById("vibes-canvas");
+      var canvasW = canvas.offsetWidth || window.innerWidth;
+
+      data = shuffle(data);
+      data.forEach(function (item) {
+        var scale = DISPLAY_WIDTH / item.width;
+        item.displayW = DISPLAY_WIDTH;
+        item.displayH = Math.round(item.height * scale);
+      });
+
+      var placed = [];
+      var maxBottom = 0;
+
+      data.forEach(function (item) {
+        var pos = tryPlace(item, placed, canvasW);
+        if (!pos) return;
+        placed.push(pos);
+        if (pos.y + pos.h > maxBottom) maxBottom = pos.y + pos.h;
+
+        var el;
+        if (item.url) {
+          el = document.createElement("a");
+          el.href = item.url;
+          el.target = "_blank";
+          el.rel = "noopener noreferrer";
+        } else {
+          el = document.createElement("span");
+        }
+        el.style.position = "absolute";
+        el.style.left = pos.x + "px";
+        el.style.top = pos.y + "px";
+        el.style.display = "block";
+
+        var imgEl = document.createElement("img");
+        imgEl.src = IMG_BASE + item.filename;
+        imgEl.width = item.displayW;
+        imgEl.height = item.displayH;
+        imgEl.alt = item.filename;
+        el.appendChild(imgEl);
+        canvas.appendChild(el);
+      });
+
+      canvas.style.height = (maxBottom + 40) + "px";
+    })
+    .catch(function (err) {
+      console.error("vibes: failed to load image data", err);
+    });
+})();
+</script>

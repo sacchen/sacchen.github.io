@@ -2,3 +2,8 @@ title: Samuel's Blog
 
 # permalink setting for URL structure
 permalink: /blog/:title/
+
+exclude:
+  - vibes-guide.md
+  - lister.py
+  - vibes_sources.yml

@@ -1,12 +1,11 @@
 ---
 layout: default
 ---
-<div class="post-container">
+<div class="container">
 
   <article class="post-article">
     <header class="post-header">
       <h1 class="post-title">{{ page.title }}</h1>
-      
       <h3 class="post-author">{{ page.author }}</h3>
       <h3 class="post-date">{{ page.date | date: "%B %d, %Y" }}</h3>
     </header>
@@ -15,6 +14,6 @@ layout: default
       {{ content }}
     </section>
 
-    </article>
+  </article>
 
 </div>
