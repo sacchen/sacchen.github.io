@@ -205,8 +205,6 @@
 }
 
 #vibes-canvas img {
-  position: absolute;
-  cursor: pointer;
   display: block;
   border: none;
 }
