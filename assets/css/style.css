@@ -48,7 +48,7 @@
   }
   
   .site-header {
-    margin-bottom: 40px;
+    margin-bottom: 10px;
   }
   
   /* Style the main site title in the header differently from post titles */
@@ -197,7 +197,6 @@
 #vibes-canvas {
   position: relative;
   width: 100%;
-  overflow: hidden;
 }
 
 #vibes-canvas img {
