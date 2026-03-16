@@ -48,11 +48,7 @@
   }
   
   .site-header {
-    margin-bottom: 0; /* Space below header is handled by main's top padding */
-  }
-
-  main > .container {
-    padding-top: 40px;
+    margin-bottom: 40px;
   }
   
   /* Style the main site title in the header differently from post titles */
