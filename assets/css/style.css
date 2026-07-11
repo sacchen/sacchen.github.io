@@ -48,7 +48,15 @@
   }
   
   .site-header {
-    margin-bottom: 16px;
+    margin-bottom: 0;
+  }
+
+  main > .container {
+    padding-top: 0;
+  }
+
+  main > .container > :first-child {
+    margin-top: 0;
   }
   
   /* Style the main site title in the header differently from post titles */
