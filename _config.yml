@@ -5,6 +5,10 @@ description: ""
 permalink: /blog/:title/
 
 exclude:
+  - vendor
+  - .bundle
+  - Gemfile
+  - Gemfile.lock
   - vibes-guide.md
   - lister.py
   - vibes_sources.yml
