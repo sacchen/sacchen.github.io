@@ -6,6 +6,8 @@
         <a href="{{ item.url }}">{{ item.name }}</a>
       {% endfor %}
     </nav>
-    <p>{{ site.description }}</p>
+    {% if site.description and site.description != empty %}
+      <p>{{ site.description }}</p>
+    {% endif %}
   </header>
 </div>
