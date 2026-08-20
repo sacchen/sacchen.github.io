@@ -178,37 +178,3 @@
   .paper { font-size: 1rem; }
   .paper-header { margin-top: 1.5rem; }
 }
-
-/* ---------- /papers/ index ---------- */
-
-.paper-list {
-  margin: 1.75rem 0;
-  padding: 0;
-  list-style: none;
-}
-
-.paper-list li {
-  padding: 0.9rem 0;
-  border-bottom: 1px solid #e6e5e0;
-}
-
-.paper-list li:first-child { border-top: 1px solid #e6e5e0; }
-
-.paper-list a {
-  font-size: 1.12rem;
-  text-decoration: none;
-}
-
-.paper-list a:hover { text-decoration: underline; }
-
-.paper-list-meta {
-  display: block;
-  margin-top: 0.25rem;
-  color: #8a8880;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-    sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.085em;
-  text-transform: uppercase;
-}
