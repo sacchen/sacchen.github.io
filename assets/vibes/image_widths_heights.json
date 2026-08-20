@@ -7,7 +7,8 @@
   {
     "filename": "ftx_balance_sheet.png",
     "width": 2264,
-    "height": 734
+    "height": 734,
+    "weight": 1.6
   },
   {
     "filename": "future-of-trash-april-2023.png",
@@ -22,7 +23,8 @@
   {
     "filename": "i_dont_use_ai.JPG",
     "width": 1169,
-    "height": 1380
+    "height": 1380,
+    "weight": 1.15
   },
   {
     "filename": "idle_doing_nothing.PNG",
@@ -37,7 +39,8 @@
   {
     "filename": "payoff_table.JPG",
     "width": 1414,
-    "height": 2048
+    "height": 2048,
+    "weight": 1.4
   },
   {
     "filename": "research_methods.jpg",
@@ -56,8 +59,9 @@
   },
   {
     "filename": "tiktok_coding.png",
-    "width": 612,
-    "height": 792
+    "width": 366,
+    "height": 783,
+    "weight": 1.25
   },
   {
     "filename": "writing_process.PNG",

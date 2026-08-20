@@ -209,7 +209,19 @@
 
 #vibes-canvas img {
   display: block;
-  border: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Dense screenshots can't be read at canvas size — every image opens full size in
+   a new tab, so hint at that on hover. */
+.vibes-item {
+  transition: opacity 0.12s ease, box-shadow 0.12s ease;
+}
+
+.vibes-item:hover {
+  opacity: 0.92;
+  box-shadow: 0 0 0 2px #C9AE75;
 }
 
 /* Tomorrow Theme for Highlight.js (used by .hljs class) */

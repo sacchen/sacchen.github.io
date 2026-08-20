@@ -7,8 +7,36 @@ layout: shell
 (function () {
   var DATA_URL = "/assets/vibes/image_widths_heights.json";
   var IMG_BASE = "/assets/vibes/";
-  var DISPLAY_WIDTH = 320;
   var PADDING = 8;
+
+  // Sizing follows guzey.com/vibes: pick a scale factor that normalises each image
+  // toward a target display area, but anchor it to the image's own resolution and
+  // bound it. Anchoring to native size is what keeps the page from looking like a
+  // uniform grid — images land at a range of sizes rather than all the same one.
+  var GOAL_AREA = 126000;   // target display px² (matches guzey's median)
+  var MAX_AREA = 235000;    // nothing may dominate the canvas
+  var MIN_SCALE = 0.125;    // never shrink past 1/8 — text dies below that
+  var MAX_SCALE = 1.0;      // never upscale past native — that just blurs
+
+  function sizeFor(item, canvasW) {
+    var weight = item.weight || 1;
+    var scale = Math.sqrt(GOAL_AREA * weight / (item.width * item.height));
+    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
+
+    var w = item.width * scale;
+    var h = item.height * scale;
+
+    var cap = MAX_AREA * weight;
+    if (w * h > cap) {
+      var k = Math.sqrt(cap / (w * h));
+      w *= k; h *= k;
+    }
+
+    var limit = canvasW - PADDING * 2;
+    if (w > limit) { h *= limit / w; w = limit; }
+
+    return { w: Math.round(w), h: Math.round(h) };
+  }
 
   function rectsOverlap(a, b) {
     return !(
@@ -24,21 +52,26 @@ layout: shell
     var h = img.displayH;
     var maxX = Math.max(0, canvasW - w);
     var yRange = Math.max(maxBottom + h + PADDING, h * 2);
-    var attempts = 600;
-    for (var i = 0; i < attempts; i++) {
-      var x = Math.floor(Math.random() * (maxX + 1));
-      var y = Math.floor(Math.random() * yRange);
-      var candidate = { x: x, y: y, w: w, h: h };
-      var ok = true;
-      for (var j = 0; j < placed.length; j++) {
-        if (rectsOverlap(candidate, placed[j])) {
-          ok = false;
-          break;
+
+    // Random placement, retried against a steadily taller canvas. Growing the
+    // region rather than giving up means no image is ever silently dropped.
+    for (var round = 0; round < 40; round++) {
+      for (var i = 0; i < 150; i++) {
+        var candidate = {
+          x: Math.floor(Math.random() * (maxX + 1)),
+          y: Math.floor(Math.random() * yRange),
+          w: w,
+          h: h
+        };
+        var ok = true;
+        for (var j = 0; j < placed.length; j++) {
+          if (rectsOverlap(candidate, placed[j])) { ok = false; break; }
         }
+        if (ok) return candidate;
       }
-      if (ok) return candidate;
+      yRange += h;
     }
-    return null;
+    return { x: 0, y: maxBottom + PADDING, w: w, h: h };
   }
 
   function shuffle(arr) {
@@ -55,31 +88,34 @@ layout: shell
       var canvas = document.getElementById("vibes-canvas");
       var canvasW = canvas.offsetWidth || window.innerWidth;
 
-      data = shuffle(data);
+      shuffle(data);
       data.forEach(function (item) {
-        var scale = DISPLAY_WIDTH / item.width;
-        item.displayW = DISPLAY_WIDTH;
-        item.displayH = Math.round(item.height * scale);
+        var size = sizeFor(item, canvasW);
+        item.displayW = size.w;
+        item.displayH = size.h;
+      });
+
+      // Place the largest first — packing the big pieces around small ones already
+      // scattered across the canvas is what used to leave them homeless.
+      var order = data.slice().sort(function (a, b) {
+        return b.displayW * b.displayH - a.displayW * a.displayH;
       });
 
       var placed = [];
       var maxBottom = 0;
 
-      data.forEach(function (item) {
+      order.forEach(function (item) {
         var pos = tryPlace(item, placed, canvasW, maxBottom);
-        if (!pos) return;
         placed.push(pos);
         if (pos.y + pos.h > maxBottom) maxBottom = pos.y + pos.h;
 
-        var el;
-        if (item.url) {
-          el = document.createElement("a");
-          el.href = item.url;
-          el.target = "_blank";
-          el.rel = "noopener noreferrer";
-        } else {
-          el = document.createElement("span");
-        }
+        // Every image links somewhere: to its source if we know one, otherwise to
+        // the file itself so dense screenshots stay readable at full resolution.
+        var el = document.createElement("a");
+        el.href = item.url || (IMG_BASE + item.filename);
+        el.target = "_blank";
+        el.rel = "noopener noreferrer";
+        el.className = "vibes-item";
         el.style.position = "absolute";
         el.style.left = pos.x + "px";
         el.style.top = pos.y + "px";
@@ -90,6 +126,7 @@ layout: shell
         imgEl.width = item.displayW;
         imgEl.height = item.displayH;
         imgEl.alt = item.filename;
+        imgEl.loading = "lazy";
         el.appendChild(imgEl);
         canvas.appendChild(el);
       });
