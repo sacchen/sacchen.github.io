@@ -1,0 +1,177 @@
+/* Hog paper -- a LaTeX-looking document inside the Jekyll site.
+ *
+ * Everything is scoped under .paper so the site header, nav and every other
+ * page keep their own styling untouched.
+ *
+ * The prose is set in KaTeX_Main -- the Computer Modern face that katex.min.css
+ * already loads for the math -- so body text and equations share one typeface,
+ * the way they do in a real LaTeX document. The stack falls back to a normal
+ * serif for any glyph Computer Modern lacks.
+ *
+ * Light only, matching the rest of the site: the web build drops the figure's
+ * dark <picture> source, so page and plot surface agree at one value.
+ */
+
+.paper {
+  --ink: #1a1a19;
+  --soft: #52514e;
+  --faint: #8a8880;
+  --rule: #e2e1dc;
+  --accent: #007acc; /* the site's link colour */
+
+  --cm: "KaTeX_Main", Charter, "Bitstream Charter", "Iowan Old Style", Georgia,
+    Cambria, "Times New Roman", serif;
+
+  max-width: 33.5em;
+  margin-inline: auto;
+  color: var(--ink);
+  font-family: var(--cm);
+  font-size: 1.075rem;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- title block: centred, in the shape of \maketitle ---------- */
+
+.paper-header {
+  margin: 2.5rem 0 3rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+}
+
+.paper-title {
+  margin: 0;
+  font-family: var(--cm);
+  font-size: clamp(1.85rem, 1.4rem + 1.9vw, 2.45rem);
+  font-weight: 400; /* LaTeX titles are roman, not bold */
+  line-height: 1.15;
+  letter-spacing: 0.004em;
+  text-wrap: balance;
+}
+
+.paper-deck {
+  margin: 0.95rem auto 0;
+  max-width: 30em;
+  color: var(--soft);
+  font-size: 1.06rem;
+  font-style: italic;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* KaTeX inside the deck must not inherit the italic slant of the prose. */
+.paper-deck .katex { font-style: normal; }
+
+.paper-author {
+  margin: 1.75rem 0 0;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+
+.paper-date {
+  margin: 0.15rem 0 0;
+  color: var(--faint);
+  font-size: 0.95rem;
+}
+
+/* ---------- PDF download ---------- */
+
+.paper-links { margin: 1.5rem 0 0; }
+
+.paper-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.36em 0.9em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  color: var(--soft);
+  font-family: var(--cm);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.paper-links a:hover {
+  border-color: var(--faint);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.paper-links svg {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+}
+
+/* ---------- body ---------- */
+
+.paper h2 {
+  margin: 2.75rem 0 1rem;
+  font-family: var(--cm);
+  font-size: 1.42rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.paper p { margin: 0 0 1.1rem; }
+
+.paper a { color: var(--accent); }
+
+.paper blockquote {
+  margin: 1.6rem 0;
+  padding-left: 1.15rem;
+  border-left: 2px solid var(--rule);
+  color: var(--soft);
+}
+
+.paper blockquote p:last-child { margin-bottom: 0; }
+
+.paper code {
+  font-size: 0.92em;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+.paper strong { font-weight: 700; }
+
+/* ---------- figure ---------- */
+
+.paper figure {
+  width: 100%;
+  margin: 2.5rem 0 2.25rem;
+}
+
+.paper figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.paper figcaption {
+  margin-top: 0.85rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--rule);
+  color: var(--soft);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* ---------- math ---------- */
+
+.paper .katex { font-size: 1.05em; }
+
+/* Long display lines scroll on their own instead of widening the page.
+ * See https://github.com/KaTeX/KaTeX/issues/1023 */
+.paper .katex-display {
+  margin: 1.4rem 0;
+  padding: 0.3rem 0.1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+@media (max-width: 34em) {
+  .paper { font-size: 1rem; }
+  .paper-header { margin-top: 1.5rem; }
+}
