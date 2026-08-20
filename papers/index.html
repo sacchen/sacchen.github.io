@@ -1,0 +1,17 @@
+---
+layout: default
+title: Papers
+permalink: /papers/
+extra_css:
+  - /assets/css/paper.css
+---
+<h1>Papers</h1>
+<ul class="paper-list">
+{% assign papers = site.pages | where_exp: "p", "p.paper_date" | sort: "paper_date" | reverse %}
+{% for p in papers %}
+  <li>
+    <a href="{{ p.url }}">{{ p.title }}</a>
+    <span class="paper-list-meta">{{ p.paper_author }} &middot; {{ p.paper_date }}</span>
+  </li>
+{% endfor %}
+</ul>

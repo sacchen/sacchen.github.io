@@ -1,6 +1,8 @@
 ---
 layout: default
 title: Roll as many dice as the die has sides
+paper_date: Aug 20, 2026
+paper_author: By Samuel Chen and Mikhail Carmien
 permalink: /papers/hog/
 extra_css:
   - /assets/katex/katex.min.css
@@ -19,7 +21,8 @@ dice</p>
 <p class="paper-date">Aug 20, 2026</p>
 <p class="paper-links"><a href="/papers/hog/roll-as-many-dice.pdf" download><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.75v8.5M4.75 7l3.25 3.25L11.25 7M2.25 13.25h11.5"/></svg>Download PDF</a></p>
 </header>
-<p>CS61A describes the rules as</p>
+<p><a href="https://cs61a.vercel.app/proj/hog/index.html">CS61A</a>
+describes the rules as</p>
 <blockquote>
 <p>In Hog, two players alternate turns trying to be the first to end a
 turn with at least 100 total points. On each turn, the current player
@@ -27,7 +30,7 @@ chooses some number of dice to roll, up to 10. That player’s score for
 the turn is the sum of the dice outcomes. However, a player who rolls
 too many dice risks:</p>
 <p><strong>Sow Sad</strong>. If any of the dice outcomes is a 1, the
-current player’s score for the turn is <code>1</code>.</p>
+current player’s score for the turn is 1.</p>
 </blockquote>
 <p>In this paper, we show that for an
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>-sided
