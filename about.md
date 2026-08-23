@@ -4,25 +4,19 @@ title: About
 permalink: /about/
 ---
 
-# About Me
+# About
 
-Hi, I'm Samuel. I study Mathematics and Scientific Computation at UC Davis, with a central focus on how AI impacts the world.
+I'm Samuel. I study Mathematics and Scientific Computation at UC Davis.
 
-I believe that understanding the technical details is necessary to make effective policy. This is why I'm building a technical foundation in areas like linear algebra and optimization to better understand tech governance.
+This is where my academic and professional writing goes, and where I point people who want to find my work. Right now I'm reviewing real analysis before the next course in the fall.
 
-This philosophy also drives my interest in making things from scratch, similar to Andrej Karpathy's nanochat. My projects, like implementing AlphaGo to explore scaling laws or scoping out a Rubik's Cube solver to understand NP-completeness, are how I build that foundation.
+Some things I've made:
 
-This blog is where I explore those questions.
+- [How Fragile is the AI Industry?](/blog/how-fragile-is-the-AI-industry/) — capex, depreciation schedules, and who is actually paying for the buildout.
+- [A short paper on maximizing expected turn score](/papers/hog/) in a dice game.
+- [13 merged pull requests](https://github.com/passagemath/passagemath) to passagemath, an open-source computer algebra system.
+- [The Berkeley Rule](https://berkeleyca.gov/sites/default/files/2026-02/2026-03-10%20Item%2008%20The%20Berkeley%20Rule%20Artificial%20Intelligence%20Municipal.pdf) — I drafted operational standards for this municipal AI ordinance while interning for Berkeley Councilmember Igor Tregub. The Council adopted it in March 2026.
 
-## AI's Impact
+[Resume](/assets/Samuel_Chen_Resume.pdf) · [LinkedIn](https://linkedin.com/in/samuel-a-chen)
 
-- **On Governance:** How can we build structures that actually keep AI companies accountable? How did the very people who set up mechanisms to guard against profit incentives end up removing those very safeguards?
-- **On Economics:** What are the real economic impacts of AI? What happens if the marginal cost of labor goes to zero? I'm currently researching the financial fragility of the AI industry for my writing class, digging into 10-Ks to understand its high capex and P/E ratios.
-
-## How I Think
-
-I also write about the systems that shape my perspectives on these problems:
-- **On Optimization:** How does optimization show up in the real world? I'm a fan of the Jane Street podcast and interested in the packing problem, like how SF Compute allocates node-time rectangles to make a liquid compute market, and estimating queue wait times based on how fast the line moves.
-- **On Learning:** I'm fascinated by the pedagogy of learning itself. I'm interested in how Mathacademy uses scaffolding and recall to teach math effectively. This leads me to other questions: What is the role of AI-assisted writing, and what is the purpose of education as universities adjust to these tools?
-        
-This blog is for tackling these questions and contributing to the conversation about AI. I'm always open to discussing this stuff, so feel free to send a message.
+*Last updated August 2026.*

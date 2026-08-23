@@ -1,8 +1,29 @@
 [
   {
+    "filename": "accountability_partner.jpg",
+    "width": 1228,
+    "height": 769
+  },
+  {
     "filename": "at_my_limit.jpg",
     "width": 959,
     "height": 969
+  },
+  {
+    "filename": "cat_powerful_aura.PNG",
+    "width": 960,
+    "height": 1259
+  },
+  {
+    "filename": "cofactor_method.PNG",
+    "width": 736,
+    "height": 487,
+    "weight": 1.6
+  },
+  {
+    "filename": "do_I_look.PNG",
+    "width": 500,
+    "height": 500
   },
   {
     "filename": "ftx_balance_sheet.png",
@@ -21,15 +42,25 @@
     "height": 844
   },
   {
-    "filename": "i_dont_use_ai.JPG",
-    "width": 1169,
-    "height": 1380,
-    "weight": 1.15
+    "filename": "how_are_you.PNG",
+    "width": 960,
+    "height": 1438,
+    "weight": 1.6
   },
   {
     "filename": "idle_doing_nothing.PNG",
     "width": 1334,
     "height": 750
+  },
+  {
+    "filename": "jesus_done_for_me.JPG",
+    "width": 1284,
+    "height": 1081
+  },
+  {
+    "filename": "middle_east.JPG",
+    "width": 1307,
+    "height": 1298
   },
   {
     "filename": "moral_philsophy.JPG",
@@ -43,19 +74,36 @@
     "weight": 1.4
   },
   {
+    "filename": "red_plenty.PNG",
+    "width": 960,
+    "height": 1287,
+    "weight": 1.2
+  },
+  {
     "filename": "research_methods.jpg",
     "width": 959,
     "height": 954
   },
   {
-    "filename": "seitanist.png",
-    "width": 3024,
-    "height": 3024
+    "filename": "seitanist.jpg",
+    "width": 1600,
+    "height": 1600
+  },
+  {
+    "filename": "slot_machines.PNG",
+    "width": 1170,
+    "height": 1354,
+    "weight": 1.4
   },
   {
     "filename": "stress_graph.JPG",
     "width": 1030,
     "height": 796
+  },
+  {
+    "filename": "sweaty.JPG",
+    "width": 1098,
+    "height": 461
   },
   {
     "filename": "tiktok_coding.png",
