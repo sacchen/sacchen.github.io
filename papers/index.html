@@ -9,6 +9,6 @@ permalink: /papers/
 <ul class="project-list">
 {% assign papers = site.pages | where_exp: "p", "p.paper_date" | sort: "paper_date" | reverse %}
 {% for p in papers %}
-  <li><a href="{{ p.url }}">{{ p.title }}</a> - <span>{{ p.paper_date }}</span></li>
+  <li><a href="{{ p.url }}">{{ p.title }}</a> - <span>{{ p.paper_date | date: "%b %-d, %Y" }}</span></li>
 {% endfor %}
 </ul>

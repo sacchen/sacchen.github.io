@@ -1,0 +1,59 @@
+---
+layout: default
+title: Making passagemath more robust and easier to use
+paper_date: 2026-06-17
+paper_author: By Samuel Chen
+permalink: /papers/passagemath/
+extra_css:
+  - /assets/css/paper.css
+---
+<article class="paper">
+<header class="paper-header">
+<h1 class="paper-title">Making passagemath more robust and easier to use</h1>
+<p class="paper-deck">Davis Math Lab project report, Spring 2026</p>
+<p class="paper-author">By Samuel Chen &middot; Faculty mentor: Matthias K&ouml;ppe</p>
+<p class="paper-date">Jun 17, 2026</p>
+<p class="paper-links"><a href="https://www.math.ucdavis.edu/~dml/reportS26/Koeppe.pdf"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.75v8.5M4.75 7l3.25 3.25L11.25 7M2.25 13.25h11.5"/></svg>Read the PDF</a></p>
+</header>
+
+<p>Passagemath is a modular, pip-installable repackaging of SageMath. Rather than
+installing all of Sage, you install just the parts you need and run them in plain
+Python environments like Google Colab. That modularity is the source of a whole
+class of bugs: code written to assume a full SageMath install breaks when its
+optional dependencies are missing.</p>
+
+<p>This report covers a quarter of work in Professor K&ouml;ppe's undergraduate group.
+The contributions fall into three groups.</p>
+
+<p><strong>Fixing the modular-install bug pattern.</strong> A function tries to import an
+optional package, the import silently doesn't happen, and the function raises a
+<code>NameError</code> only when someone finally calls it. I fixed instances across
+combinatorics, number theory, and <em>p</em>-adics, and wrote
+<code>check_unbound_imports.py</code>, an abstract syntax tree scanner that finds the
+pattern across the whole codebase.</p>
+
+<p><strong>Build, CI, and plot rendering.</strong> Replaced the deprecated
+<code>pkg_resources</code> with <code>importlib.metadata</code> to fix Linux build crashes, and
+diagnosed a Windows CI failure caused by an invalid path format. Passagemath plots
+also used to appear in Colab and JupyterLite as the text
+<code>Graphics object consisting of 1 graphics primitive</code> instead of an image;
+adding <code>_repr_png_</code> and <code>_repr_svg_</code> to the <code>Graphics</code> class
+made them render.</p>
+
+<p><strong>Helping the team move faster.</strong> Onboarding and environment-setup docs, a list
+of shovel-ready issues with problem descriptions and suggested approaches, and guided
+exercise notebooks that hand a new contributor a real instance of the modular-install
+bug to fix. I also built <code>pm-explore</code>, which generates a runnable Jupyter
+notebook from any passagemath source file with the environment preconfigured &mdash; it
+reads the source as an AST, so it still works when the imports are broken.</p>
+
+<p>The report closes on linear programming ergonomics, which I took up because using
+passagemath for MAT 168 meant writing nested loops and tracking indices by hand where
+cvxpy would not. Passagemath has a real advantage here: it does exact arithmetic over
+rationals and number fields, while cvxpy only handles floats. I documented how to
+retrieve dual values as a first step, then concluded that doing the rest properly
+needed more understanding of the backend than I had yet.</p>
+
+<p>All 14 pull requests are
+<a href="https://github.com/passagemath/passagemath/pulls?q=is%3Apr+author%3Asacchen+is%3Amerged">listed on GitHub</a>.</p>
+</article>
