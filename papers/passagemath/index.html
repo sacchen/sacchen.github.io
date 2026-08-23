@@ -17,43 +17,27 @@ extra_css:
 </header>
 
 <p>Passagemath is a modular, pip-installable repackaging of SageMath. Rather than
-installing all of Sage, you install just the parts you need and run them in plain
-Python environments like Google Colab. That modularity is the source of a whole
-class of bugs: code written to assume a full SageMath install breaks when its
-optional dependencies are missing.</p>
+installing all of Sage, users can install just the parts they need and run them in plain
+Python environments like Google Colab. This quarter, I contributed to fixing bugs in the
+codebase, building tools and materials to help the group, and exploring how to make
+linear programming easier to use.</p>
 
-<p>This report covers a quarter of work in Professor K&ouml;ppe's undergraduate group.
-The contributions fall into three groups.</p>
+<p>My approach to choosing what to work on was to prioritize based on scale,
+neglectedness, and fit. Passagemath's modular design means code that assumed a full
+SageMath install could break when dependencies were missing, so I fixed that pattern
+across combinatorics, number theory, and others, and wrote
+<code>check_unbound_imports.py</code> to scan the codebase for it. In Colab and
+JupyterLite, plots used to show up as text instead of images; adding
+<code>_repr_png_</code> and <code>_repr_svg_</code> to the <code>Graphics</code> class
+fixed that. Later, my approach was to be a multiplier and help teammates get started
+fast, with onboarding docs, a list of shovel-ready issues, exercise notebooks, and
+<code>pm-explore</code>, which generates a runnable notebook from any passagemath file
+even when the environment is broken.</p>
 
-<p><strong>Fixing the modular-install bug pattern.</strong> A function tries to import an
-optional package, the import silently doesn't happen, and the function raises a
-<code>NameError</code> only when someone finally calls it. I fixed instances across
-combinatorics, number theory, and <em>p</em>-adics, and wrote
-<code>check_unbound_imports.py</code>, an abstract syntax tree scanner that finds the
-pattern across the whole codebase.</p>
-
-<p><strong>Build, CI, and plot rendering.</strong> Replaced the deprecated
-<code>pkg_resources</code> with <code>importlib.metadata</code> to fix Linux build crashes, and
-diagnosed a Windows CI failure caused by an invalid path format. Passagemath plots
-also used to appear in Colab and JupyterLite as the text
-<code>Graphics object consisting of 1 graphics primitive</code> instead of an image;
-adding <code>_repr_png_</code> and <code>_repr_svg_</code> to the <code>Graphics</code> class
-made them render.</p>
-
-<p><strong>Helping the team move faster.</strong> Onboarding and environment-setup docs, a list
-of shovel-ready issues with problem descriptions and suggested approaches, and guided
-exercise notebooks that hand a new contributor a real instance of the modular-install
-bug to fix. I also built <code>pm-explore</code>, which generates a runnable Jupyter
-notebook from any passagemath source file with the environment preconfigured &mdash; it
-reads the source as an AST, so it still works when the imports are broken.</p>
-
-<p>The report closes on linear programming ergonomics, which I took up because using
-passagemath for MAT 168 meant writing nested loops and tracking indices by hand where
-cvxpy would not. Passagemath has a real advantage here: it does exact arithmetic over
-rationals and number fields, while cvxpy only handles floats. I documented how to
-retrieve dual values as a first step, then concluded that doing the rest properly
-needed more understanding of the backend than I had yet.</p>
-
-<p>All 14 pull requests are
+<p>I spent the last stretch on linear programming ergonomics, and concluded it was a
+problem worth solving but that making progress and designing it carefully would take
+understanding that I didn't have yet. The
+<a href="https://www.math.ucdavis.edu/~dml/reportS26/Koeppe.pdf">report</a> has the full
+account, and the 14 merged pull requests are
 <a href="https://github.com/passagemath/passagemath/pulls?q=is%3Apr+author%3Asacchen+is%3Amerged">listed on GitHub</a>.</p>
 </article>
