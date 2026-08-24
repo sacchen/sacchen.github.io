@@ -16,12 +16,12 @@
     "weight": 1.8
   },
   {
-    "filename": "cat_powerful_aura.PNG",
+    "filename": "cat_powerful_aura.jpg",
     "width": 960,
     "height": 1259
   },
   {
-    "filename": "cofactor_method.PNG",
+    "filename": "cofactor_method.jpg",
     "width": 736,
     "height": 487,
     "weight": 2.2
@@ -39,9 +39,15 @@
     "weight": 2.0
   },
   {
-    "filename": "future-of-trash-april-2023.png",
+    "filename": "future-of-trash-april-2023.jpg",
     "width": 960,
     "height": 540
+  },
+  {
+    "filename": "get_out_of_the_car.jpg",
+    "width": 1826,
+    "height": 2182,
+    "weight": 4.0
   },
   {
     "filename": "good_things_are_good.JPG",
@@ -93,7 +99,7 @@
     "height": 1600
   },
   {
-    "filename": "slot_machines.PNG",
+    "filename": "slot_machines.jpg",
     "width": 1170,
     "height": 1354,
     "weight": 1.8
@@ -104,7 +110,7 @@
     "height": 461
   },
   {
-    "filename": "tiktok_coding.png",
+    "filename": "tiktok_coding.jpg",
     "width": 366,
     "height": 783,
     "weight": 2.2

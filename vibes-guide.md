@@ -54,7 +54,7 @@ None — uses `uv` to manage dependencies inline.
   poster reads fine small, a 2200px spreadsheet doesn't read at any size that fits on a
   canvas. That's what `vibes_sizes.yml` is for, and why every image links to its
   full-size file (or its source URL, if `vibes_sources.yml` has one) in a new tab.
-- **Crop dead space before reaching for a size hint.** `tiktok_coding.png` was 41% black
+- **Crop dead space before reaching for a size hint.** `tiktok_coding.jpg` was 41% black
   letterbox bars; cropping it to its content box made the caption readable while using
   *less* room on the canvas than bumping its weight did. When you do crop, lower the
   weight to match — `idle_doing_nothing.PNG` went from 2.0 to 1.5 after its bars came
