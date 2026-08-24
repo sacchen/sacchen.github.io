@@ -7,6 +7,10 @@ permalink: /papers/
 <h1>Papers</h1>
 
 <ul class="project-list">
+{% comment %}
+  paper_date must be an unquoted ISO date on every paper: this sorts on it, and
+  Liquid dies on the whole build if one page's is a String and another's a Date.
+{% endcomment %}
 {% assign papers = site.pages | where_exp: "p", "p.paper_date" | sort: "paper_date" | reverse %}
 {% for p in papers %}
   <li><a href="{{ p.url }}">{{ p.title }}</a> - <span>{{ p.paper_date | date: "%b %-d, %Y" }}</span></li>
