@@ -1,13 +1,23 @@
 <div class="container">
   <header class="site-header">
-    <h1><a href="/">{{ site.title }}</a></h1>
+    {% comment %}
+      On the home page the site title is the page's heading, so it is the h1
+      there and "Latest Posts" is a section inside it. Every other page has a
+      heading of its own, so the title steps down to a <p> and does not compete
+      with it. Either way each page has exactly one h1.
+    {% endcomment %}
+    {% if page.url == "/" %}
+      <h1 class="site-name"><a href="/">{{ site.title }}</a></h1>
+    {% else %}
+      <p class="site-name"><a href="/">{{ site.title }}</a></p>
+    {% endif %}
     <nav>
       {% for item in site.data.navigation %}
         <a href="{{ item.url }}">{{ item.name }}</a>
       {% endfor %}
     </nav>
     {% if site.description and site.description != empty %}
-      <p>{{ site.description }}</p>
+      <p class="site-tagline">{{ site.description }}</p>
     {% endif %}
   </header>
 </div>

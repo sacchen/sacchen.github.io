@@ -1,10 +1,19 @@
 /* Hog paper -- a document page inside the Jekyll site.
  *
+ * GENERATED. build-html.js copies this over the site's assets/css/paper.css,
+ * so edits made in the site repo are silently reverted on the next build.
+ * Change this file instead.
+ *
  * Everything is scoped under .paper so the site header, nav and every other
  * page keep their own styling untouched.
  *
- * Light only, matching the rest of the site: the web build drops the figure's
- * dark <picture> source, so page and plot surface agree at one value.
+ * The typography is deliberately not the site's: Charter, a 40em measure and a
+ * formal title block make a paper read as a document rather than as another
+ * page of the blog.
+ *
+ * Colour is the part that is shared. The tokens below are the light and dark
+ * surfaces the plot itself is rendered against (see expected_score.py), so the
+ * figure sits on the page with no visible edge in either mode.
  */
 
 .paper {
@@ -14,10 +23,11 @@
   --rule: #e6e5e0;
   --accent: #007acc; /* the site's link colour */
 
+  /* The serif is the paper's own; the sans for metadata is the site's, taken
+     from --font in style.css so there is one stack to maintain. */
   --serif: Charter, "Bitstream Charter", "Iowan Old Style", "Source Serif Pro",
     Georgia, Cambria, "Times New Roman", serif;
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-    sans-serif;
+  --sans: var(--font);
 
   max-width: 40em;
   margin-inline: auto;
@@ -28,6 +38,18 @@
   font-kerning: normal;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+/* expected_score.py THEMES["dark"], except --ink: the figure's primary is
+   #ffffff, right for 1.6pt plot lines and harsh over several pages of prose. */
+@media (prefers-color-scheme: dark) {
+  .paper {
+    --ink: #ededea;
+    --soft: #c3c2b7;
+    --faint: #8a8880;
+    --rule: #333330;
+    --accent: #3987e5;
+  }
 }
 
 /* ---------- title block: three levels, ranged left ---------- */
@@ -148,6 +170,7 @@
   display: block;
   width: 100%;
   height: auto;
+  border: 0;
 }
 
 .paper figcaption {
@@ -162,6 +185,9 @@
 .paper figcaption strong { color: var(--ink); font-weight: 650; }
 
 /* ---------- math ---------- */
+
+/* KaTeX draws in currentColor, so the formulas follow --ink into dark
+ * mode with no override of their own. */
 
 .paper .katex { font-size: 1.06em; }
 

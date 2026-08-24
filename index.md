@@ -4,10 +4,11 @@ title: Home
 ---
 
 ## Latest Posts
-<ul>
+
+<ul class="index">
   {% for post in site.posts %}
-    <li>
-      <a href="{{ post.url }}">{{ post.title }}</a> - <span>{{ post.date | date_to_string }}</span>
-    </li>
+  <li>
+    <a href="{{ post.url }}">{{ post.title }}</a><span class="index-date">{{ post.date | date: "%b %-d, %Y" }}</span>
+  </li>
   {% endfor %}
 </ul>

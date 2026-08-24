@@ -1,207 +1,325 @@
-/*
- * ===================================================================
- * FINAL UNIFIED STYLESHEET FOR JEKYLL BLOG
- * This file combines all styles needed for the Markdown PDF look.
- * ===================================================================
+/* Site stylesheet.
+ *
+ * The design is unchanged: system sans, an 800px column, normal-weight
+ * headings. What changed is that every colour now comes from a token, so the
+ * site can follow prefers-color-scheme without a second copy of the rules.
+ *
+ * The dark surface is #1a1a19 on purpose. That is the exact background the
+ * plot on /papers/hog/ is rendered against (hog_paper/figures/expected_score.py),
+ * so the figure sits on the page with no visible edge in either mode.
+ *
+ * The papers keep their own typography in paper.css -- Charter, a narrower
+ * measure, a formal title block. They are meant to read as documents rather
+ * than as pages of this site.
  */
 
-/* --- 0. Self-hosted Fonts --- */
+/* --- 1. Fonts and tokens --- */
 
+/* Apple devices already have San Francisco and Android has Roboto. Inter is a
+ * compact fallback for platforms that have neither (principally Windows), so
+ * those devices avoid Segoe UI without making everyone download a webfont. */
 @font-face {
-  font-family: "iA Writer Quattro S";
-  src: url("/assets/fonts/iAWriterQuattroS-Regular.woff2") format("woff2");
-  font-weight: 400;
+  font-family: "Inter Web";
+  src: url("/assets/fonts/InterVariable-latin.woff2") format("woff2");
   font-style: normal;
+  font-weight: 100 900;
   font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-@font-face {
-  font-family: "iA Writer Quattro S";
-  src: url("/assets/fonts/iAWriterQuattroS-Italic.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
+:root {
+  --surface: #fff;
+  --ink: #333;
+  --soft: #555;   /* nav */
+  --faint: #767676; /* bylines, dates -- darkest grey that clears 4.5:1 on white */
+  --rule: rgba(0, 0, 0, 0.18);
+  --rule-strong: rgba(0, 0, 0, 0.69);
+  --accent: #007acc;
+
+  --sunk: #f8f8f8;   /* code background */
+  --edge: #ccc;      /* code border */
+
+  --font: -apple-system, BlinkMacSystemFont, Roboto, "Inter Web", Arial,
+    sans-serif;
+  --mono: ui-monospace, Menlo, Monaco, Consolas, "Droid Sans Mono",
+    "Courier New", monospace;
 }
 
-@font-face {
-  font-family: "iA Writer Quattro S";
-  src: url("/assets/fonts/iAWriterQuattroS-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surface, secondary, muted and grid are the values the plot is drawn
+       with; ink is stepped down from the figure's #ffffff, which suits 1.6pt
+       lines but glares over a long essay. */
+    --surface: #1a1a19;
+    --ink: #e8e7e3;
+    --soft: #c3c2b7;
+    --faint: #8a8880;
+    --rule: rgba(255, 255, 255, 0.20);
+    --rule-strong: rgba(255, 255, 255, 0.55);
+    --accent: #3987e5;
+
+    --sunk: rgba(255, 255, 255, 0.045);
+    --edge: #3d3d39;
+  }
 }
 
-@font-face {
-  font-family: "iA Writer Quattro S";
-  src: url("/assets/fonts/iAWriterQuattroS-BoldItalic.woff2") format("woff2");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
+/* --- 2. Layout --- */
 
-/* --- 1. Main Layout & Site Header Styles --- */
+html {
+  background-color: var(--surface);
+}
 
 .container {
-    max-width: 800px; /* A good readable width for the content */
-    margin: 0 auto;   /* This centers the container on the page */
-    padding: 20px;    /* Adds some space around the content */
-  }
-  
-  .site-header {
-    margin-bottom: 0;
-  }
-
-  main > .container {
-    padding-top: 0;
-  }
-
-  main > .container > :first-child {
-    margin-top: 0;
-  }
-  
-  /* Style the main site title in the header differently from post titles */
-  .site-header h1 {
-    border-bottom: none; /* Remove the bottom border from the main site title */
-    font-size: 2em;
-    font-weight: bold; /* Make the site title bold */
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Make sure the site title link isn't styled like a normal content link */
-  .site-header h1 a {
-    color: #333;
-    text-decoration: none;
-  }
-  
-  /* Style the navigation links */
-  .site-header nav a {
-    margin-right: 15px;
-    color: #555;
-  }
-  
-  
-  /* --- 2. "Markdown PDF" Content Styles --- */
-  /* These styles apply to the content rendered from your Markdown files. */
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "iA Writer Quattro S", "Segoe UI", sans-serif;
-    /* UPDATED: Using the more conservative Option 1 for font size */
-    font-size: clamp(15px, 1rem + 0.4vw, 18px); 
-    line-height: 1.6; 
-    word-wrap: break-word;
-    color: #333;
-    background-color: #fff;
-    margin: 0;
-  }
-  
-  img {
-      max-width: 100%;
-      max-height: 100%;
-  }
-  
-  a {
-      color: #007acc; /* A standard link color */
-      text-decoration: none;
-  }
-  
-  a:hover {
-      text-decoration: underline;
-  }
-  
-  hr {
-      border: 0;
-      height: 2px;
-      border-bottom: 2px solid rgba(0, 0, 0, 0.18);
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-      font-weight: normal;
-  }
-  
-  h1 {
-    /* UPDATED: Slightly increased the relative size to ensure it still stands out */
-    font-size: 2.4em; 
-    padding-bottom: 0.3em;
-    line-height: 1.2;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.18);
-  }
-  
-  blockquote {
-      margin: 0 7px 0 5px;
-      padding: 0 16px 0 10px;
-      border-left: 5px solid rgba(0, 122, 204, 0.5);
-      background: rgba(127, 127, 127, 0.1);
-  }
-  
-  table {
-      border-collapse: collapse;
-  }
-  
-  table > thead > tr > th {
-      text-align: left;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.69);
-  }
-  
-  table > thead > tr > th,
-  table > thead > tr > td,
-  table > tbody > tr > th,
-  table > tbody > tr > td {
-      padding: 5px 10px;
-  }
-  
-  table > tbody > tr + tr > td {
-      border-top: 1px solid rgba(0, 0, 0, 0.18);
-  }
-  
-  .emoji {
-      height: 1.4em;
-  }
-  
-  /* --- 3. Code Block & Syntax Highlighting Styles --- */
-  
-  /* Base styles for all code elements */
-  code {
-    font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
-    /* UPDATED: Font size is now slightly smaller than the body text */
-    font-size: 0.9em; 
-    /* The line-height will be inherited, which is what we want. */
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
-  
-  /* Style for multi-line code blocks */
-  pre {
-      background-color: #f8f8f8;
-      border: 1px solid #cccccc;
-      border-radius: 3px;
-      overflow-x: auto;
-      padding: 16px;
-      line-height: 1.357em;
-  }
-  
-  pre code {
-      color: inherit;
-      background-color: transparent;
-      font-size: 1em;
-      border-radius: 0;
-      padding: 0;
-  }
-  
-  /* Style for inline code snippets (e.g., `code`) */
-  :not(pre) > code {
-      color: #C9AE75;
-      font-size: 0.9em;
-      background-color: #f8f8f8;
-      border-radius: 3px;
-      padding: 2px 4px;
-  }
-  
-  /* --- Wide container --- */
+
 .container-wide {
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* --- Vibes page --- */
+/* The masthead sits in .container on every page, including the wide ones.
+   Without this it floats in an 800px column above a 1400px canvas. */
+.layout-vibes .container,
+.layout-wide .container {
+  max-width: 1400px;
+}
+
+.site-header {
+  margin-bottom: 0;
+}
+
+/* For headings a page needs structurally but should not show -- the vibes
+   canvas is deliberately bare, but it still needs an h1. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+main > .container {
+  padding-top: 0;
+}
+
+main > .container > :first-child,
+main > .container-wide > :first-child {
+  margin-top: 0;
+}
+
+/* --- 3. Masthead --- */
+
+/* The site name is not the page's heading -- every page has its own h1 -- so
+   it is a <p> styled to the same size rather than a competing h1. */
+.site-name {
+  margin: 0 0 0.5rem;
+  padding-bottom: 0;
+  border-bottom: none;
+  font-size: 2em;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.site-name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.site-header nav a {
+  margin-right: 15px;
+  color: var(--soft);
+}
+
+.site-tagline {
+  color: var(--soft);
+}
+
+/* --- 4. Body --- */
+
+body {
+  font-family: var(--font);
+  font-size: clamp(15px, 1rem + 0.4vw, 18px);
+  line-height: 1.6;
+  word-wrap: break-word;
+  color: var(--ink);
+  background-color: var(--surface);
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+hr {
+  border: 0;
+  height: 2px;
+  border-bottom: 2px solid var(--rule);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 2.4em;
+  padding-bottom: 0.3em;
+  line-height: 1.2;
+  border-bottom: 1px solid var(--rule);
+}
+
+blockquote {
+  margin: 0 7px 0 5px;
+  padding: 0 16px 0 10px;
+  border-left: 5px solid var(--accent);
+  /* Mid-grey at 10% is the one colour here that needs no token: it darkens a
+     light surface and lightens a dark one by the same amount. */
+  background: rgba(127, 127, 127, 0.1);
+}
+
+@supports (color: color-mix(in srgb, red 50%, transparent)) {
+  blockquote {
+    border-left-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+}
+
+/* --- 5. Tables --- */
+
+table {
+  border-collapse: collapse;
+}
+
+table > thead > tr > th {
+  text-align: left;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+  padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+  border-top: 1px solid var(--rule);
+}
+
+.emoji {
+  height: 1.4em;
+}
+
+/* --- 6. Code --- */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background-color: var(--sunk);
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  overflow-x: auto;
+  padding: 16px;
+  line-height: 1.357em;
+}
+
+pre code {
+  color: inherit;
+  background-color: transparent;
+  font-size: 1em;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Inline code used to be #C9AE75, a leftover from the VS Code theme this
+   stylesheet was exported from. It never matched anything else on the site and
+   sat at about 2:1 against its own background. */
+:not(pre) > code {
+  color: var(--ink);
+  font-size: 0.9em;
+  background-color: var(--sunk);
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+/* --- 7. Index lists --- */
+
+/* One list style for the three indexes: posts on the home page, papers, and
+   projects. They used to be three different shapes -- a bare <ul> with a
+   literal " - " on the home page, .project-list elsewhere. */
+.index {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.index li {
+  padding: 0.3rem 0;
+}
+
+.index-date {
+  color: var(--faint);
+}
+
+.index-date::before {
+  content: " - ";
+  color: var(--faint);
+}
+
+/* --- 8. Posts --- */
+
+.post-header {
+  margin-bottom: 2rem;
+}
+
+.post-title {
+  margin-bottom: 0.25rem;
+}
+
+.post-author,
+.post-date {
+  font-size: 0.9em;
+  color: var(--faint);
+  font-weight: normal;
+  margin: 0.1rem 0;
+}
+
+.post-author:empty {
+  display: none;
+}
+
+.post-content {
+  margin-top: 2rem;
+}
+
+/* --- 9. Vibes canvas --- */
+
 #vibes-canvas {
   position: relative;
   width: 100%;
@@ -209,111 +327,50 @@
 
 #vibes-canvas img {
   display: block;
-  border: 1px solid #ddd;
+  border: 1px solid var(--rule);
   border-radius: 8px;
 }
 
-/* Dense screenshots can't be read at canvas size — every image opens full size in
-   a new tab, so hint at that on hover. */
+/* Dense screenshots can't be read at canvas size -- every image opens full
+   size in a new tab, so hint at that on hover. */
 .vibes-item {
   transition: opacity 0.12s ease, box-shadow 0.12s ease;
 }
 
 .vibes-item:hover {
   opacity: 0.92;
-  box-shadow: 0 0 0 2px #C9AE75;
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
-/* Tomorrow Theme for Highlight.js (used by .hljs class) */
-.hljs {
-    display: block;
-    overflow-x: auto;
-    color: #4d4d4c;
+.vibes-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
-.hljs-comment,
-.hljs-quote {
-    color: #8e908c;
+/* The images are nearly all screenshots on white. At full strength against a
+   #1a1a19 page they read as a wall of lightboxes, so they rest a little dimmed
+   and come back to full strength on hover or keyboard focus -- which is the
+   moment you are about to open one full size anyway. Held at 0.82: enough to
+   settle the glare, not so much that dense screenshots stop being readable. */
+@media (prefers-color-scheme: dark) {
+  #vibes-canvas img {
+    filter: brightness(0.82);
+    transition: filter 0.12s ease;
+  }
+
+  .vibes-item:hover img,
+  .vibes-item:focus-visible img {
+    filter: none;
+  }
+
+  .vibes-item:hover {
+    opacity: 1;
+  }
 }
 
-.hljs-variable,
-.hljs-template-variable,
-.hljs-tag,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class,
-.hljs-regexp,
-.hljs-deletion {
-    color: #c82829;
-}
-
-.hljs-number,
-.hljs-built_in,
-.hljs-literal,
-.hljs-type,
-.hljs-params,
-.hljs-meta,
-.hljs-link {
-    color: #f5871f;
-}
-
-.hljs-attribute {
-    color: #eab700;
-}
-
-.hljs-string,
-.hljs-symbol,
-.hljs-bullet,
-.hljs-addition {
-    color: #718c00;
-}
-
-.hljs-title,
-.hljs-section {
-    color: #4271ae;
-}
-
-.hljs-keyword,
-.hljs-selector-tag {
-    color: #8959a8;
-}
-
-.hljs-emphasis {
-    font-style: italic;
-}
-
-.hljs-strong {
-    font-weight: bold;
-}
-
-/* --- Post styles --- */
-.post-header {
-    margin-bottom: 2rem;
-}
-
-.post-title {
-    margin-bottom: 0.25rem;
-}
-
-.post-author,
-.post-date {
-    font-size: 0.9em;
-    color: #777;
-    font-weight: normal;
-    margin: 0.1rem 0;
-}
-
-.post-content {
-    margin-top: 2rem;
-}
-
-/* --- Project list --- */
-.project-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.project-list li {
-    padding: 0.3rem 0;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

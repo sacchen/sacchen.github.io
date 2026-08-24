@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
   <title>{{ page.title }} | {{ site.title }}</title>
   <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
   {% for css in page.extra_css %}<link rel="stylesheet" href="{{ css | relative_url }}">
   {% endfor %}</head>
-<body>
+<body class="layout-{{ page.layout }}">
   {% include header.html %}
   <main>
     {{ content }}
