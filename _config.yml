@@ -11,4 +11,6 @@ exclude:
   - Gemfile.lock
   - vibes-guide.md
   - lister.py
+  - prep_images.py
   - vibes_sources.yml
+  - vibes_sizes.yml

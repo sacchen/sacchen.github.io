@@ -9,14 +9,24 @@ None — uses `uv` to manage dependencies inline.
 1. Drop screenshot files into `assets/vibes/`.
    Supported formats: `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.heic`, `.heif`, `.avif`
 
-2. *(Optional)* Add source URLs to `vibes_sources.yml` in the repo root:
+2. Prep them:
+   ```
+   uv run prep_images.py
+   ```
+   Compresses the new drops, converts anything browsers can't render, and strips
+   EXIF. Add `--dry-run` to see what it would do first. Note that this renames
+   files — most things become `.webp` — so run it *before* writing any filename
+   into the two YAML files below. It only touches files git doesn't track yet;
+   committed images just get a lossless metadata strip, never a re-encode.
+
+3. *(Optional)* Add source URLs to `vibes_sources.yml` in the repo root:
    ```yaml
    foo.png: https://example.com
    bar.png: https://another.com
    ```
    Images with a URL will be clickable links on the vibes page.
 
-3. *(Optional)* If the image is too small to read at its default size, add a size
+4. *(Optional)* If the image is too small to read at its default size, add a size
    hint to `vibes_sizes.yml` in the repo root:
    ```yaml
    dense_spreadsheet.png: 2.4
@@ -27,20 +37,32 @@ None — uses `uv` to manage dependencies inline.
    2.0-2.5, tweet or meme with small text 1.5-2.0, photo or big-text poster nothing at
    all — leaving most images unhinted is what gives the page its range of sizes.
 
-4. Regenerate the metadata JSON:
+5. Regenerate the metadata JSON:
    ```
    uv run --with pillow lister.py
    ```
 
-5. Commit everything together:
+6. Commit everything together:
    ```
-   git add assets/vibes/ vibes_sources.yml vibes_sizes.yml
+   git add -A assets/vibes/ vibes_sources.yml vibes_sizes.yml
    git commit -m "Add vibes images"
    ```
 
 ## How it works
 
 - `lister.py` reads every image in `assets/vibes/`, records its dimensions, merges any URLs from `vibes_sources.yml` and size hints from `vibes_sizes.yml`, and writes `assets/vibes/image_widths_heights.json`.
+- `prep_images.py` picks each image's format by measuring rather than by rule: it
+  encodes every plausible way and ships the smallest result that passes a quality
+  gate. The gate is ringing around flat colour — measured only on pixels whose
+  3x3 neighbourhood is one exact colour, since a halo around a caption is the
+  artifact you actually see here. That's why a palette PNG beats JPEG on a
+  spreadsheet and loses to it on a photograph. It also holds the display-size
+  invariant: resizing is only allowed when the image lands on the same rung of
+  the ladder below, which is asserted per file.
+- **HEIC is the one that bites.** iPhone photos arrive in it, Safari renders them,
+  and Chrome and Firefox render nothing — so they look fine locally and are
+  invisible to most visitors. `prep_images.py` converts them out. Phone photos
+  also carry GPS coordinates, and this repo is public.
 - The vibes page (`/vibes/`) fetches that JSON at load time and places images in a collision-detected freeform layout.
 - Sizing follows [guzey.com/vibes](https://guzey.com/vibes/): each image is shown at
   1/1, 1/2, 1/4 or 1/8 of native resolution — the coarsest reduction that brings it
