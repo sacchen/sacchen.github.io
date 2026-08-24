@@ -1,13 +1,19 @@
 [
   {
     "filename": "accountability_partner.jpg",
-    "width": 1228,
-    "height": 769
+    "width": 1185,
+    "height": 649
   },
   {
     "filename": "at_my_limit.jpg",
     "width": 959,
     "height": 969
+  },
+  {
+    "filename": "berlin_facebook.png",
+    "width": 1372,
+    "height": 1786,
+    "weight": 1.8
   },
   {
     "filename": "cat_powerful_aura.PNG",
@@ -18,18 +24,19 @@
     "filename": "cofactor_method.PNG",
     "width": 736,
     "height": 487,
-    "weight": 1.6
+    "weight": 2.2
   },
   {
     "filename": "do_I_look.PNG",
     "width": 500,
-    "height": 500
+    "height": 500,
+    "weight": 2.0
   },
   {
     "filename": "ftx_balance_sheet.png",
     "width": 2264,
     "height": 734,
-    "weight": 1.6
+    "weight": 2.0
   },
   {
     "filename": "future-of-trash-april-2023.png",
@@ -45,12 +52,13 @@
     "filename": "how_are_you.PNG",
     "width": 960,
     "height": 1438,
-    "weight": 1.6
+    "weight": 2.3
   },
   {
     "filename": "idle_doing_nothing.PNG",
     "width": 1334,
-    "height": 750
+    "height": 750,
+    "weight": 1.5
   },
   {
     "filename": "jesus_done_for_me.JPG",
@@ -58,26 +66,21 @@
     "height": 1081
   },
   {
-    "filename": "middle_east.JPG",
-    "width": 1307,
-    "height": 1298
-  },
-  {
     "filename": "moral_philsophy.JPG",
     "width": 1080,
-    "height": 1077
+    "height": 1077,
+    "weight": 1.7
   },
   {
     "filename": "payoff_table.JPG",
     "width": 1414,
-    "height": 2048,
-    "weight": 1.4
+    "height": 2048
   },
   {
     "filename": "red_plenty.PNG",
     "width": 960,
     "height": 1287,
-    "weight": 1.2
+    "weight": 2.0
   },
   {
     "filename": "research_methods.jpg",
@@ -93,12 +96,7 @@
     "filename": "slot_machines.PNG",
     "width": 1170,
     "height": 1354,
-    "weight": 1.4
-  },
-  {
-    "filename": "stress_graph.JPG",
-    "width": 1030,
-    "height": 796
+    "weight": 1.8
   },
   {
     "filename": "sweaty.JPG",
@@ -109,11 +107,12 @@
     "filename": "tiktok_coding.png",
     "width": 366,
     "height": 783,
-    "weight": 1.25
+    "weight": 2.2
   },
   {
     "filename": "writing_process.PNG",
     "width": 1334,
-    "height": 750
+    "height": 750,
+    "weight": 2.0
   }
 ]

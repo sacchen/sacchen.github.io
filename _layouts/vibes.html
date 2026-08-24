@@ -9,28 +9,27 @@ layout: shell
   var IMG_BASE = "/assets/vibes/";
   var PADDING = 8;
 
-  // Sizing follows guzey.com/vibes: pick a scale factor that normalises each image
-  // toward a target display area, but anchor it to the image's own resolution and
-  // bound it. Anchoring to native size is what keeps the page from looking like a
-  // uniform grid — images land at a range of sizes rather than all the same one.
-  var GOAL_AREA = 126000;   // target display px² (matches guzey's median)
-  var MAX_AREA = 235000;    // nothing may dominate the canvas
-  var MIN_SCALE = 0.125;    // never shrink past 1/8 — text dies below that
-  var MAX_SCALE = 1.0;      // never upscale past native — that just blurs
+  // Sizing follows guzey.com/vibes: pick the coarsest power-of-two reduction that
+  // brings an image under a target display area. The quantized ladder is the whole
+  // point — girl.surgery normalises every image to one exact area instead, and the
+  // result reads as a grid. Here two images 20% apart in native resolution can land
+  // a full rung, 4x in area, apart, which is what makes the canvas look scattered.
+  var GOAL_AREA = 600 * 400;      // guzey's target display area
+  var RUNGS = [1, 2, 4, 8];       // never upscale, never shrink past 1/8 of native
 
   function sizeFor(item, canvasW) {
-    var weight = item.weight || 1;
-    var scale = Math.sqrt(GOAL_AREA * weight / (item.width * item.height));
-    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
+    var area = item.width * item.height;
+    var divisor = RUNGS[RUNGS.length - 1];
+    for (var i = 0; i < RUNGS.length; i++) {
+      if (area / (RUNGS[i] * RUNGS[i]) <= GOAL_AREA) { divisor = RUNGS[i]; break; }
+    }
 
+    // A weight is a readability override applied on top of whatever rung the image
+    // landed on, so it stays a smooth knob rather than an all-or-nothing rung jump.
+    // Rungs are 4x apart in area, so weight 4.0 is exactly one rung bigger.
+    var scale = Math.sqrt(item.weight || 1) / divisor;
     var w = item.width * scale;
     var h = item.height * scale;
-
-    var cap = MAX_AREA * weight;
-    if (w * h > cap) {
-      var k = Math.sqrt(cap / (w * h));
-      w *= k; h *= k;
-    }
 
     var limit = canvasW - PADDING * 2;
     if (w > limit) { h *= limit / w; w = limit; }
@@ -47,19 +46,22 @@ layout: shell
     );
   }
 
-  function tryPlace(img, placed, canvasW, maxBottom) {
+  function tryPlace(img, placed, canvasW) {
     var w = img.displayW;
     var h = img.displayH;
     var maxX = Math.max(0, canvasW - w);
-    var yRange = Math.max(maxBottom + h + PADDING, h * 2);
 
-    // Random placement, retried against a steadily taller canvas. Growing the
-    // region rather than giving up means no image is ever silently dropped.
-    for (var round = 0; round < 40; round++) {
-      for (var i = 0; i < 150; i++) {
+    // Grow the search region up from a small window, the way guzey and girl.surgery
+    // both do, instead of scattering across the whole canvas so far. Every image
+    // tries the tightest region that could hold it first, so it fills gaps left by
+    // earlier images rather than starting a new sparse row below them.
+    var region = Math.max(600, h + PADDING);
+
+    for (var round = 0; round < 400; round++) {
+      for (var i = 0; i < 50; i++) {
         var candidate = {
           x: Math.floor(Math.random() * (maxX + 1)),
-          y: Math.floor(Math.random() * yRange),
+          y: Math.floor(Math.random() * (region - h + 1)),
           w: w,
           h: h
         };
@@ -69,9 +71,15 @@ layout: shell
         }
         if (ok) return candidate;
       }
-      yRange += h;
+      region += 50;
     }
-    return { x: 0, y: maxBottom + PADDING, w: w, h: h };
+
+    // Unreachable in practice; guarantees no image is ever silently dropped.
+    var bottom = 0;
+    for (var k = 0; k < placed.length; k++) {
+      bottom = Math.max(bottom, placed[k].y + placed[k].h);
+    }
+    return { x: 0, y: bottom + PADDING, w: w, h: h };
   }
 
   function shuffle(arr) {
@@ -105,7 +113,7 @@ layout: shell
       var maxBottom = 0;
 
       order.forEach(function (item) {
-        var pos = tryPlace(item, placed, canvasW, maxBottom);
+        var pos = tryPlace(item, placed, canvasW);
         placed.push(pos);
         if (pos.y + pos.h > maxBottom) maxBottom = pos.y + pos.h;
 

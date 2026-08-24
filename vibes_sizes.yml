@@ -1,24 +1,30 @@
 # Per-image size hints for the vibes page.
 #
-# Images are sized by a scale factor chosen to bring each one toward a common display
-# area, bounded so nothing shrinks past 1/8 of native or gets upscaled past it. That
-# handles photos and memes on its own.
+# Images are sized by a power-of-two ladder: each one is shown at 1/1, 1/2, 1/4 or 1/8
+# of native resolution, whichever is the coarsest reduction that fits it under a common
+# target area. The quantization is deliberate — it's what makes the page look scattered
+# rather than gridded. Photos and big-text memes need nothing from this file.
 #
 # It cannot handle one thing: how big the *text* is inside the image. A 3000px photo of
 # a poster with four words reads fine small; a 2200px spreadsheet doesn't read at any
 # size that fits on a canvas. Pixel dimensions don't tell you which is which.
 #
-# The number here multiplies the target area for one image. 1.0 is the default, 2.0 is
-# twice the area (about 1.4x wider and taller), 0.7 shrinks something that hogs
-# attention. Rough guide: dense table or diagram 1.4-1.6, tweet or meme with small text
-# 1.15-1.25, photo or big-text poster 1.0. Prefer cropping dead space over a big number.
+# The number here multiplies the display area after the rung is chosen. 1.0 is the
+# default; 2.0 is twice the area (about 1.4x wider and taller); rungs are 4x apart in
+# area, so 4.0 is exactly one rung bigger. Rough guide: dense table or chart 2.0-2.5,
+# tweet or meme with small text 1.5-2.0, photo or big-text poster nothing at all.
+# Prefer cropping dead space over a big number.
 #
 # After editing, run: uv run --with pillow lister.py
 
-ftx_balance_sheet.png: 1.6
-payoff_table.JPG: 1.4
-tiktok_coding.png: 1.25
-how_are_you.PNG: 1.6
-cofactor_method.PNG: 1.6
-slot_machines.PNG: 1.4
-red_plenty.PNG: 1.2
+ftx_balance_sheet.png: 2.0
+how_are_you.PNG: 2.3
+cofactor_method.PNG: 2.2
+tiktok_coding.png: 2.2
+idle_doing_nothing.PNG: 1.5
+writing_process.PNG: 2.0
+red_plenty.PNG: 2.0
+do_I_look.PNG: 2.0
+slot_machines.PNG: 1.8
+moral_philsophy.JPG: 1.7
+berlin_facebook.png: 1.8
