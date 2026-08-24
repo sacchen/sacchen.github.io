@@ -1,0 +1,479 @@
+---
+layout: default
+title: 404
+permalink: /404.html
+extra_css:
+  - /assets/css/404.css?v=6
+---
+
+{% comment %}
+  GitHub Pages serves this file for any URL that does not resolve. Before it
+  existed the reader got GitHub's own 404, which is a dead end.
+
+  The one thing a 404 owes a reader is a way onward, so the payout line is a
+  real page pulled from site.posts and the nav. Everything around it is a joke,
+  which a 404 can afford in a way that no other page on the site can.
+
+  Sprites are built in JS from 8x8 string maps rather than shipped as images:
+  seven sprites as PNGs would be seven requests and a sprite sheet to maintain,
+  and as inline SVG here they cost about forty lines and recolour by editing a
+  hex value. Styling and the reasoning behind the pixel grid: assets/css/404.css.
+{% endcomment %}
+
+<h1 class="visually-hidden">404 — page not found</h1>
+
+<div class="slot">
+  <div class="cab">
+    <div class="marquee" aria-hidden="true">
+      <i class="bulb"></i><i class="bulb"></i><i class="bulb"></i>
+      <b>LUCKY BREAK</b>
+      <i class="bulb"></i><i class="bulb"></i><i class="bulb"></i>
+    </div>
+
+    <div class="readout">
+      <div>Credits <span id="credits">0</span></div>
+      <div>Win <span id="win">0</span></div>
+    </div>
+
+    <div class="window">
+      <div class="reel"><div class="strip" data-reel="0"></div></div>
+      <div class="reel"><div class="strip" data-reel="1"></div></div>
+      <div class="reel"><div class="strip" data-reel="2"></div></div>
+    </div>
+
+    <div aria-live="polite">
+      <p class="verdict" id="verdict">Page not found</p>
+      <p class="payout" id="payout"></p>
+    </div>
+
+    <section class="payglass" aria-label="Paytable. One credit per pull.">
+      <div class="payglass-title"><span>Paytable</span><span>1 credit / spin</span></div>
+      <div class="paytable">
+        <span>7 7 7</span><b>100</b><span>BAR BAR BAR</span><b>50</b>
+        <span>Bell Bell Bell</span><b>30</b><span>Cherry Cherry Cherry</span><b>15</b>
+        <span>Coin Coin Coin</span><b>10</b><span>0 0 0</span><b>8</b>
+        <span>4 4 4</span><b>5</b><span>Any 2 cherries</span><b>4</b>
+        <span>Any 2 bells</span><b>2</b><span>Any 2 BARs</span><b>2</b>
+      </div>
+    </section>
+
+    <div class="coin-deck">
+      <button class="coin-slot" id="coin-slot" type="button">
+        <span class="coin-slot-mouth" aria-hidden="true"></span>
+        <span>Insert 20¢</span>
+        <small>Get 20 credits</small>
+      </button>
+    </div>
+
+    <div class="tray" id="tray" aria-hidden="true">
+      <span class="tray-label">Payouts <b id="tray-total">0</b></span>
+      <div class="tray-pile" id="tray-pile"></div>
+    </div>
+  </div>
+
+  <div class="lever-mount">
+    <button class="lever" id="lever" aria-label="Pull the lever to spin">
+      <span class="lever-arm" id="lever-arm" aria-hidden="true">
+        <span class="lever-knob"></span>
+      </span>
+    </button>
+  </div>
+
+  <div class="coins" id="coins" aria-hidden="true"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* --- Sprites ---------------------------------------------------------
+     One character per pixel on an 8x8 grid, '.' transparent. Horizontally
+     adjacent pixels of the same colour are merged into a single <rect>, which
+     takes a sprite from 64 nodes to roughly 20. */
+
+  var PAL = {
+    d: "#ffcc33",  /* display amber, for the digits */
+    r: "#ff3b6b",  /* cherry */
+    g: "#3ad26a",  /* stem */
+    w: "#ffffff",  /* specular pixel */
+    b: "#ffb020",  /* bell */
+    c: "#22d3ee",  /* bar */
+    t: "#ff2d95",  /* seven */
+    y: "#ffcf4d",  /* coin face */
+    o: "#b8791a"   /* coin edge */
+  };
+
+  var SPRITES = {
+    four: ["....dd..",
+           "...ddd..",
+           "..d.dd..",
+           ".d..dd..",
+           ".dddddd.",
+           "....dd..",
+           "....dd..",
+           "........"],
+    zero: ["..dddd..",
+           ".dd..dd.",
+           ".dd..dd.",
+           ".dd.ddd.",
+           ".ddd.dd.",
+           ".dd..dd.",
+           "..dddd..",
+           "........"],
+    seven: [".tttttt.",
+            ".tttttt.",
+            ".....tt.",
+            "....tt..",
+            "...tt...",
+            "..tt....",
+            "..tt....",
+            "..tt...."],
+    cherry: [".....gg.",
+             "....gg..",
+             "...gg...",
+             "..rrrr..",
+             ".rwrrrr.",
+             ".rrrrrr.",
+             ".rrrrrr.",
+             "..rrrr.."],
+    bell: ["...bb...",
+           "..bbbb..",
+           "..bbbb..",
+           ".bbbbbb.",
+           ".bbbbbb.",
+           "bbbbbbbb",
+           "........",
+           "...bb..."],
+    bar: ["........",
+          "cccccccc",
+          "c......c",
+          "c.cccc.c",
+          "c.cccc.c",
+          "c......c",
+          "cccccccc",
+          "........"],
+    coin: ["..oooo..",
+           ".oyyyyo.",
+           "oyyoyyyo",
+           "oyoooyyo",
+           "oyoyyyyo",
+           "oyyoyyyo",
+           ".oyyyyo.",
+           "..oooo.."]
+  };
+
+  function sprite(name) {
+    var grid = SPRITES[name], out = "", y, x, row, ch, run;
+    for (y = 0; y < grid.length; y++) {
+      row = grid[y];
+      x = 0;
+      while (x < row.length) {
+        ch = row.charAt(x);
+        if (ch === ".") { x++; continue; }
+        run = 1;
+        while (row.charAt(x + run) === ch) run++;
+        out += '<rect x="' + x + '" y="' + y + '" width="' + run +
+               '" height="1" fill="' + PAL[ch] + '"/>';
+        x += run;
+      }
+    }
+    return '<svg viewBox="0 0 8 8" aria-hidden="true">' + out + "</svg>";
+  }
+
+  /* --- Reels -----------------------------------------------------------
+     These are virtual reel strips, not seven equally likely faces. Every stop
+     is equally likely, but common symbols occupy more stops than rare ones.
+     The three strips deliberately have different counts. Across all 13,824
+     stop combinations the paytable below returns exactly 90.1331019%, with a
+     19.0031829% hit frequency. */
+
+  var REELS = [
+    ["cherry", "coin", "four", "bell", "coin", "bar", "zero", "coin",
+     "cherry", "bell", "four", "coin", "bar", "bell", "zero", "seven",
+     "coin", "bell", "cherry", "four", "bar", "coin", "zero", "cherry"],
+    ["zero", "cherry", "coin", "four", "bell", "bar", "zero", "bar",
+     "coin", "cherry", "four", "bell", "zero", "coin", "cherry", "seven",
+     "four", "coin", "bell", "coin", "zero", "bar", "coin", "cherry"],
+    ["four", "coin", "cherry", "bar", "zero", "bell", "coin", "four",
+     "coin", "bar", "cherry", "zero", "four", "coin", "seven", "cherry",
+     "bar", "coin", "zero", "bell", "four", "bell", "coin", "cherry"]
+  ];
+  var LABELS = { four: "4", zero: "0", cherry: "cherry", seven: "seven",
+                 bell: "bell", bar: "bar", coin: "coin" };
+  var COPIES = 7;
+
+  var strips = [].slice.call(document.querySelectorAll(".strip"));
+  strips.forEach(function (strip, reel) {
+    var markup = "";
+    for (var c = 0; c < COPIES; c++) {
+      REELS[reel].forEach(function (face) { markup += sprite(face); });
+    }
+    strip.innerHTML = markup;
+  });
+
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function tileHeight(strip) {
+    return strip.firstElementChild.getBoundingClientRect().height;
+  }
+
+  function place(strip, px) {
+    /* Whole pixels only. A fractional translate would resample the sprite and
+       undo the crisp edges the SVG went to the trouble of producing. */
+    strip.style.transform = "translateY(" + -Math.round(px) + "px)";
+  }
+
+  function spin(strip, reel, index, loops, duration) {
+    return new Promise(function (done) {
+      var tile = tileHeight(strip);
+      var end = (loops * REELS[reel].length + index) * tile;
+
+      function settle() {
+        place(strip, index * tile);
+        done();
+      }
+
+      if (still.matches) { settle(); return; }
+
+      var t0 = performance.now();
+      requestAnimationFrame(function step(now) {
+        var t = Math.min(1, (now - t0) / duration);
+        var eased = 1 - Math.pow(1 - t, 4);   /* fast out, long coast down */
+        place(strip, end * eased);
+        if (t < 1) requestAnimationFrame(step);
+        else settle();
+      });
+    });
+  }
+
+  /* --- Coins ----------------------------------------------------------- */
+
+  var coinField = document.getElementById("coins");
+  var tray = document.getElementById("tray");
+  var trayPile = document.getElementById("tray-pile");
+  var trayTotal = document.getElementById("tray-total");
+  var slot = document.querySelector(".slot");
+  var trayCoins = 0;
+  var trayPaid = 0;
+
+  function fillTray(n) {
+    trayPaid += n;
+    trayTotal.textContent = trayPaid;
+    trayCoins = Math.min(12, trayPaid);
+    trayPile.innerHTML = "";
+    for (var i = 0; i < trayCoins; i++) {
+      var coin = document.createElement("i");
+      coin.innerHTML = sprite("coin");
+      trayPile.appendChild(coin);
+    }
+  }
+
+  function payCoins(n) {
+    var box = tray.getBoundingClientRect();
+    var frame = slot.getBoundingClientRect();
+    var originX = box.left - frame.left + box.width / 2;
+    var originY = box.top - frame.top;
+
+    fillTray(n);
+    for (var i = 0; i < Math.min(n, 12); i++) {
+      var coin = document.createElement("div");
+      coin.className = "coin";
+      coin.innerHTML = sprite("coin");
+      coin.style.left = originX + "px";
+      coin.style.top = originY + "px";
+      coin.style.setProperty("--dx", (Math.random() * 260 - 130).toFixed(0) + "px");
+      coin.style.setProperty("--peak", (-60 - Math.random() * 90).toFixed(0) + "px");
+      coin.style.setProperty("--dy", (60 + Math.random() * 120).toFixed(0) + "px");
+      coin.style.animationDelay = (i * 35) + "ms";
+      coinField.appendChild(coin);
+      coin.addEventListener("animationend", function () { this.remove(); });
+    }
+  }
+
+  /* --- Where the reader probably meant to go ---------------------------
+     Built from the site itself, so it cannot rot into a list of dead links
+     the way a hand-written one would. */
+
+  var DESTINATIONS = [
+    {% for post in site.posts limit: 12 %}
+    { title: {{ post.title | jsonify }}, url: {{ post.url | jsonify }} },
+    {% endfor %}
+    {% for item in site.data.navigation %}{% unless item.url == "/" %}
+    { title: {{ item.name | jsonify }}, url: {{ item.url | jsonify }} },
+    {% endunless %}{% endfor %}
+    { title: "Maximizing expected turn score in Hog", url: "/papers/hog/" }
+  ];
+
+  /* --- The machine ----------------------------------------------------- */
+
+  var verdict = document.getElementById("verdict");
+  var payout = document.getElementById("payout");
+  var creditsEl = document.getElementById("credits");
+  var winEl = document.getElementById("win");
+  var lever = document.getElementById("lever");
+  var arm = document.getElementById("lever-arm");
+  var coinSlot = document.getElementById("coin-slot");
+
+  var credits = 0;
+  var busy = false;
+
+  function suggest() {
+    var pick = DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
+    payout.innerHTML = '<span class="payout-line">Payout: <a href="' +
+      pick.url + '">' + pick.title + "</a></span>";
+  }
+
+  function announce(text, hit) {
+    verdict.textContent = text;
+    verdict.classList.toggle("hit", !!hit);
+  }
+
+  var THREE_KIND = {
+    seven: 100,
+    bar: 50,
+    bell: 30,
+    cherry: 15,
+    coin: 10,
+    zero: 8,
+    four: 5
+  };
+
+  function settleUp(faces) {
+    var a = faces[0], b = faces[1], c = faces[2];
+
+    if (a === "four" && b === "zero" && c === "four") {
+      announce("404 · no payout");
+      return 0;
+    }
+    if (a === b && b === c) {
+      var prize = THREE_KIND[a];
+      announce(a === "seven" ? "Jackpot! +100" : LABELS[a] + " win! +" + prize, true);
+      payCoins(prize);
+      return prize;
+    }
+    var pairPays = { cherry: 4, bell: 2, bar: 2 };
+    for (var face in pairPays) {
+      if (faces.filter(function (shown) { return shown === face; }).length === 2) {
+        var pairPrize = pairPays[face];
+        announce(LABELS[face] + " pair! +" + pairPrize, true);
+        payCoins(pairPrize);
+        return pairPrize;
+      }
+    }
+    if (a === b || b === c || a === c) announce("Close · no win");
+    else announce("No win");
+    return 0;
+  }
+
+  function setCredits(value) {
+    credits = value;
+    creditsEl.textContent = credits;
+    lever.disabled = busy;
+  }
+
+  function randomStop(reel) {
+    return Math.floor(Math.random() * REELS[reel].length);
+  }
+
+  function pull() {
+    if (busy || credits < 1) {
+      if (credits < 1) announce("Insert 20¢ first");
+      return;
+    }
+    busy = true;
+    setCredits(credits - 1);
+
+    var picks = REELS.map(function (_, reel) { return randomStop(reel); });
+
+    announce("· · ·");
+    winEl.textContent = "0";
+
+    Promise.all([
+      spin(strips[0], 0, picks[0], 3, 900),
+      spin(strips[1], 1, picks[1], 4, 1200),
+      spin(strips[2], 2, picks[2], 5, 1500)
+    ]).then(function () {
+      var faces = picks.map(function (stop, reel) { return REELS[reel][stop]; });
+      var won = settleUp(faces);
+      busy = false;
+      setCredits(credits + won);
+      winEl.textContent = won;
+      lever.setAttribute(
+        "aria-label",
+        "Pull the lever to spin. Reels: " +
+          faces.map(function (f) { return LABELS[f]; }).join(", ")
+      );
+      suggest();
+    });
+  }
+
+  coinSlot.addEventListener("click", function () {
+    if (busy) return;
+    coinSlot.classList.remove("clunk");
+    void coinSlot.offsetWidth;
+    coinSlot.classList.add("clunk");
+    setCredits(credits + 20);
+    winEl.textContent = "0";
+    announce("20 credits loaded");
+    lever.focus();
+  });
+
+  /* --- Lever -----------------------------------------------------------
+     The lever is the control, not an ornament next to one: it takes a drag, a
+     click and a keypress.
+
+     --pull runs 0 to 1 over a drag of one rod length, so the knob keeps pace
+     with the finger rather than racing ahead of it or lagging behind. The CSS
+     turns that into foreshortening; see the .lever-arm rule. */
+
+  var TRAVEL = 90;   /* px of drag for a full pull */
+  var dragging = false, startY = 0, drawn = 0, dragged = false;
+
+  function setPull(v) { arm.style.setProperty("--pull", v); }
+
+  lever.addEventListener("pointerdown", function (e) {
+    dragging = true;
+    dragged = false;
+    startY = e.clientY;
+    arm.classList.remove("release");
+    lever.setPointerCapture(e.pointerId);
+  });
+
+  lever.addEventListener("pointermove", function (e) {
+    if (!dragging) return;
+    drawn = Math.max(0, Math.min(1, (e.clientY - startY) / TRAVEL));
+    if (drawn > 0.06) dragged = true;
+    setPull(drawn);
+  });
+
+  function letGo() {
+    if (!dragging) return;
+    dragging = false;
+    arm.classList.add("release");
+    setPull(0);
+    if (drawn >= 0.5) pull();
+    drawn = 0;
+  }
+
+  lever.addEventListener("pointerup", letGo);
+  lever.addEventListener("pointercancel", letGo);
+
+  lever.addEventListener("click", function () {
+    /* A finished drag already pulled; without this the click that follows it
+       would spin a second time. */
+    if (dragged) { dragged = false; return; }
+    arm.classList.add("release");
+    setPull(1);
+    setTimeout(function () { setPull(0); }, 260);
+    pull();
+  });
+
+  /* Start at rest on 4-0-4. This is presentation, not a spin: it costs no
+     credit, pays nothing and leaves the page's purpose clear before input. */
+  ["four", "zero", "four"].forEach(function (face, reel) {
+    place(strips[reel], REELS[reel].indexOf(face) * tileHeight(strips[reel]));
+  });
+  lever.setAttribute("aria-label", "Pull the lever. Insert 20 cents to add credits.");
+  suggest();
+})();
+</script>
