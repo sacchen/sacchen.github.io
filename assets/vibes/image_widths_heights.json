@@ -1,13 +1,73 @@
 [
   {
+    "filename": "CEO_fruity.webp",
+    "width": 1184,
+    "height": 1032
+  },
+  {
+    "filename": "Chinese_dynasty.webp",
+    "width": 872,
+    "height": 830
+  },
+  {
+    "filename": "GDP.webp",
+    "width": 1234,
+    "height": 1448
+  },
+  {
+    "filename": "LoL-Kalshi.webp",
+    "width": 1523,
+    "height": 916
+  },
+  {
+    "filename": "PTO_requests.jpeg",
+    "width": 888,
+    "height": 499
+  },
+  {
+    "filename": "SF_NY.jpeg",
+    "width": 2048,
+    "height": 1428
+  },
+  {
     "filename": "accountability_partner.jpg",
     "width": 1185,
     "height": 649
   },
   {
+    "filename": "addicted_to_research.webp",
+    "width": 1170,
+    "height": 597
+  },
+  {
+    "filename": "adopting_a_cat.webp",
+    "width": 503,
+    "height": 810
+  },
+  {
+    "filename": "among_us.webp",
+    "width": 792,
+    "height": 1240
+  },
+  {
     "filename": "at_my_limit.jpg",
     "width": 959,
     "height": 969
+  },
+  {
+    "filename": "average_gwern_essay.webp",
+    "width": 1127,
+    "height": 1271
+  },
+  {
+    "filename": "be_chatgpt.png",
+    "width": 1084,
+    "height": 1344
+  },
+  {
+    "filename": "bear_money.webp",
+    "width": 600,
+    "height": 600
   },
   {
     "filename": "berlin_facebook.jpg",
@@ -16,10 +76,40 @@
     "weight": 1.8
   },
   {
+    "filename": "brof.webp",
+    "width": 618,
+    "height": 599
+  },
+  {
+    "filename": "build_a_bear.webp",
+    "width": 1248,
+    "height": 1242
+  },
+  {
+    "filename": "cant_code.webp",
+    "width": 740,
+    "height": 400
+  },
+  {
     "filename": "cat_powerful_aura.jpg",
     "width": 960,
     "height": 1259,
     "weight": 2.0
+  },
+  {
+    "filename": "cat_toilet.webp",
+    "width": 1512,
+    "height": 2016
+  },
+  {
+    "filename": "cern.webp",
+    "width": 1284,
+    "height": 1652
+  },
+  {
+    "filename": "chopped_baby.webp",
+    "width": 1492,
+    "height": 1088
   },
   {
     "filename": "cofactor_method.jpg",
@@ -28,10 +118,75 @@
     "weight": 2.2
   },
   {
+    "filename": "college_pain.webp",
+    "width": 1190,
+    "height": 878
+  },
+  {
+    "filename": "complex_algorithm.png",
+    "width": 1362,
+    "height": 138
+  },
+  {
+    "filename": "dating_center.webp",
+    "width": 920,
+    "height": 934
+  },
+  {
+    "filename": "dating_each_other.webp",
+    "width": 748,
+    "height": 305
+  },
+  {
+    "filename": "dilly_dally.webp",
+    "width": 599,
+    "height": 669
+  },
+  {
+    "filename": "do_I_live_in_america.webp",
+    "width": 600,
+    "height": 654
+  },
+  {
     "filename": "do_I_look.PNG",
     "width": 500,
     "height": 500,
     "weight": 2.0
+  },
+  {
+    "filename": "donald_trump_bad.png",
+    "width": 1170,
+    "height": 2532
+  },
+  {
+    "filename": "double_shower.webp",
+    "width": 2016,
+    "height": 1512
+  },
+  {
+    "filename": "eat_my_meat.webp",
+    "width": 436,
+    "height": 729
+  },
+  {
+    "filename": "eating_his_alignment_teams.webp",
+    "width": 598,
+    "height": 230
+  },
+  {
+    "filename": "estimathon.jpeg",
+    "width": 848,
+    "height": 1097
+  },
+  {
+    "filename": "everything_is_the_same.webp",
+    "width": 514,
+    "height": 875
+  },
+  {
+    "filename": "fast_SF.webp",
+    "width": 1179,
+    "height": 861
   },
   {
     "filename": "ftx_balance_sheet.png",
@@ -45,10 +200,25 @@
     "height": 540
   },
   {
+    "filename": "gambling.webp",
+    "width": 2016,
+    "height": 1512
+  },
+  {
+    "filename": "general_intelligence.webp",
+    "width": 1536,
+    "height": 2048
+  },
+  {
     "filename": "get_out_of_the_car.jpg",
     "width": 1826,
     "height": 2182,
     "weight": 4.0
+  },
+  {
+    "filename": "goer_to_bed.jpeg",
+    "width": 750,
+    "height": 742
   },
   {
     "filename": "good_things_are_good.JPG",
@@ -56,10 +226,30 @@
     "height": 844
   },
   {
+    "filename": "hard_drive.png",
+    "width": 1608,
+    "height": 1132
+  },
+  {
+    "filename": "hashmap.webp",
+    "width": 600,
+    "height": 446
+  },
+  {
+    "filename": "his_eyes_his_personality.webp",
+    "width": 640,
+    "height": 633
+  },
+  {
     "filename": "how_are_you.PNG",
     "width": 960,
     "height": 1438,
     "weight": 2.3
+  },
+  {
+    "filename": "i_love_traveling.webp",
+    "width": 620,
+    "height": 461
   },
   {
     "filename": "idle_doing_nothing.PNG",
@@ -73,15 +263,145 @@
     "height": 1081
   },
   {
+    "filename": "joe_tzu.webp",
+    "width": 998,
+    "height": 1024
+  },
+  {
+    "filename": "just_move_around.jpeg",
+    "width": 1200,
+    "height": 937
+  },
+  {
+    "filename": "labubus.webp",
+    "width": 1340,
+    "height": 310
+  },
+  {
+    "filename": "life_in_fleece.webp",
+    "width": 843,
+    "height": 599
+  },
+  {
+    "filename": "liquefy_earthquake.png",
+    "width": 2006,
+    "height": 1416
+  },
+  {
+    "filename": "log_scale_pleasure.webp",
+    "width": 2048,
+    "height": 1201
+  },
+  {
+    "filename": "logic_and.webp",
+    "width": 1332,
+    "height": 1272
+  },
+  {
+    "filename": "margin.webp",
+    "width": 1512,
+    "height": 2016
+  },
+  {
+    "filename": "master_main.webp",
+    "width": 610,
+    "height": 599
+  },
+  {
+    "filename": "mastered_ML.jpg",
+    "width": 977,
+    "height": 1023
+  },
+  {
+    "filename": "mathacademy_is_down.webp",
+    "width": 1178,
+    "height": 1234
+  },
+  {
+    "filename": "millions_of_GPUs.jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  {
     "filename": "moral_philsophy.JPG",
     "width": 1080,
     "height": 1077,
     "weight": 1.7
   },
   {
+    "filename": "new_world_order.webp",
+    "width": 1081,
+    "height": 1088
+  },
+  {
+    "filename": "niels_bohr.webp",
+    "width": 1080,
+    "height": 1756
+  },
+  {
+    "filename": "no_creatine.webp",
+    "width": 908,
+    "height": 638
+  },
+  {
+    "filename": "no_more_chairs.webp",
+    "width": 1380,
+    "height": 1798
+  },
+  {
+    "filename": "openness_to_experience.webp",
+    "width": 1728,
+    "height": 2247
+  },
+  {
+    "filename": "orange_juice_futures.webp",
+    "width": 739,
+    "height": 600
+  },
+  {
+    "filename": "overworked.webp",
+    "width": 1168,
+    "height": 460
+  },
+  {
+    "filename": "passing_math.jpeg",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "filename": "passive_consumption.jpeg",
+    "width": 1948,
+    "height": 506
+  },
+  {
     "filename": "payoff_table.JPG",
     "width": 1414,
     "height": 2048
+  },
+  {
+    "filename": "penguin_agency.webp",
+    "width": 1782,
+    "height": 1488
+  },
+  {
+    "filename": "percent_fake.webp",
+    "width": 649,
+    "height": 438
+  },
+  {
+    "filename": "python_docs.webp",
+    "width": 1194,
+    "height": 822
+  },
+  {
+    "filename": "rally_driver.webp",
+    "width": 700,
+    "height": 667
+  },
+  {
+    "filename": "real_life_dune.webp",
+    "width": 1107,
+    "height": 1097
   },
   {
     "filename": "red_plenty.PNG",
@@ -90,14 +410,34 @@
     "weight": 2.0
   },
   {
+    "filename": "removing_lead.webp",
+    "width": 508,
+    "height": 499
+  },
+  {
     "filename": "research_methods.jpg",
     "width": 959,
     "height": 954
   },
   {
+    "filename": "rounded_corners.webp",
+    "width": 1312,
+    "height": 738
+  },
+  {
+    "filename": "run_over.webp",
+    "width": 1179,
+    "height": 2556
+  },
+  {
     "filename": "seitanist.jpg",
     "width": 1600,
     "height": 1600
+  },
+  {
+    "filename": "selection_effects.jpeg",
+    "width": 735,
+    "height": 500
   },
   {
     "filename": "slot_machines.jpg",
@@ -106,15 +446,100 @@
     "weight": 1.8
   },
   {
+    "filename": "stop_trying_to_problem_solve.webp",
+    "width": 1468,
+    "height": 1078
+  },
+  {
+    "filename": "subliminal_messaging.webp",
+    "width": 960,
+    "height": 539
+  },
+  {
     "filename": "sweaty.JPG",
     "width": 1098,
     "height": 461
+  },
+  {
+    "filename": "t-test.webp",
+    "width": 1088,
+    "height": 1412
+  },
+  {
+    "filename": "tax_burden.webp",
+    "width": 1180,
+    "height": 242
+  },
+  {
+    "filename": "thanks_bot.webp",
+    "width": 918,
+    "height": 1112
   },
   {
     "filename": "tiktok_coding.jpg",
     "width": 366,
     "height": 783,
     "weight": 2.2
+  },
+  {
+    "filename": "training_run.webp",
+    "width": 2048,
+    "height": 1145
+  },
+  {
+    "filename": "unstoppable.webp",
+    "width": 750,
+    "height": 1000
+  },
+  {
+    "filename": "upskilling.jpeg",
+    "width": 1260,
+    "height": 266
+  },
+  {
+    "filename": "utilitarianism.webp",
+    "width": 888,
+    "height": 1146
+  },
+  {
+    "filename": "vim.webp",
+    "width": 1782,
+    "height": 1136
+  },
+  {
+    "filename": "waifish.png",
+    "width": 1170,
+    "height": 452
+  },
+  {
+    "filename": "what_my_mom_thinks_I_do.webp",
+    "width": 640,
+    "height": 480
+  },
+  {
+    "filename": "which_one_are_you.webp",
+    "width": 2270,
+    "height": 1276
+  },
+  {
+    "filename": "whiteboard_chalkboard.png",
+    "width": 1434,
+    "height": 1408
+  },
+  {
+    "filename": "wikipedia_cat.webp",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "filename": "william_dafoe.webp",
+    "width": 599,
+    "height": 899
+  },
+  {
+    "filename": "work_claude.webp",
+    "width": 1024,
+    "height": 1024
   },
   {
     "filename": "writing_process.PNG",
