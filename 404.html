@@ -1,0 +1,718 @@
+---
+layout: default
+title: 404
+permalink: /404.html
+robots: noindex
+extra_css:
+  - /assets/css/404.css?v=7
+---
+
+{% comment %}
+  GitHub Pages serves this file for any URL that does not resolve. Before it
+  existed the reader got GitHub's own 404, which is a dead end.
+
+  The one thing a 404 owes a reader is a way onward, so the payout line is a
+  real page pulled from site.posts and the nav. Everything around it is a joke,
+  which a 404 can afford in a way that no other page on the site can.
+
+  Sprites are built in JS from 8x8 string maps rather than shipped as images:
+  seven sprites as PNGs would be seven requests and a sprite sheet to maintain,
+  and as inline SVG here they cost about forty lines and recolour by editing a
+  hex value. Styling and the reasoning behind the pixel grid: assets/css/404.css.
+{% endcomment %}
+
+<h1 class="visually-hidden">404 — page not found</h1>
+
+<div class="slot">
+  <div class="cab">
+    <div class="marquee" id="marquee" aria-hidden="true">
+      <i class="bulb"></i><i class="bulb"></i><i class="bulb"></i>
+      <b id="marquee-text">LUCKY BREAK</b>
+      <i class="bulb"></i><i class="bulb"></i><i class="bulb"></i>
+    </div>
+
+    <div class="readout">
+      <div>Spent <span id="spent">$0</span></div>
+      <div>Won <span id="won">$0</span></div>
+    </div>
+
+    <div class="window">
+      <div class="reel"><div class="strip" data-reel="0"></div></div>
+      <div class="reel"><div class="strip" data-reel="1"></div></div>
+      <div class="reel"><div class="strip" data-reel="2"></div></div>
+    </div>
+
+    <div aria-live="polite">
+      <p class="verdict" id="verdict">Page not found</p>
+      <p class="payout" id="payout"></p>
+    </div>
+
+    <section class="payglass" aria-label="Paytable. One dollar per pull.">
+      <div class="payglass-title"><span>Paytable</span><span>$1 / spin</span></div>
+      <div class="paytable">
+        <span>7 7 7</span><b>$100</b><span>BAR BAR BAR</span><b>$40</b>
+        <span>Other triples</span><b>$5–30</b><span>Any 2 cherries</span><b>$3</b>
+        <span>2 bells or BARs</span><b>$2</b><span>Any 2 coins</span><b>$1</b>
+      </div>
+    </section>
+
+    <div class="coin-deck">
+      <div class="wallet">
+        <span class="wallet-label">New money <b>$1</b></span>
+        <button class="wallet-coin-button" id="dollar-coin" type="button"
+                aria-label="Insert a new one dollar coin">
+          <span class="wallet-coins" id="wallet-coins" aria-hidden="true"></span>
+        </button>
+      </div>
+      <button class="coin-slot" id="coin-slot" type="button"
+              aria-label="Add one dollar to bank through coin slot">
+        <span class="coin-slot-mouth" aria-hidden="true"></span>
+        <span>Insert coin</span>
+        <small id="slot-source">Add $1</small>
+      </button>
+    </div>
+
+    <div class="tray" id="tray" aria-label="Bank balance: zero dollars">
+      <span class="tray-label">Bank <b id="tray-total">$0</b></span>
+      <span class="tray-pile" id="tray-pile"></span>
+    </div>
+  </div>
+
+  <div class="lever-mount">
+    <button class="lever" id="lever" aria-label="Pull the lever to spin">
+      <span class="lever-arm" id="lever-arm" aria-hidden="true">
+        <span class="lever-knob"></span>
+      </span>
+    </button>
+  </div>
+
+  <div class="coins" id="coins" aria-hidden="true"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* --- Sprites ---------------------------------------------------------
+     One character per pixel on an 8x8 grid, '.' transparent. Horizontally
+     adjacent pixels of the same colour are merged into a single <rect>, which
+     takes a sprite from 64 nodes to roughly 20. */
+
+  var PAL = {
+    d: "#ffcc33",  /* display amber, for the digits */
+    r: "#ff3b6b",  /* cherry */
+    g: "#3ad26a",  /* stem */
+    w: "#ffffff",  /* specular pixel */
+    b: "#ffb020",  /* bell */
+    c: "#22d3ee",  /* bar */
+    t: "#ff2d95",  /* seven */
+    y: "#ffcf4d",  /* coin face */
+    o: "#b8791a"   /* coin edge */
+  };
+
+  var SPRITES = {
+    four: ["....dd..",
+           "...ddd..",
+           "..d.dd..",
+           ".d..dd..",
+           ".dddddd.",
+           "....dd..",
+           "....dd..",
+           "........"],
+    zero: ["..dddd..",
+           ".dd..dd.",
+           ".dd..dd.",
+           ".dd.ddd.",
+           ".ddd.dd.",
+           ".dd..dd.",
+           "..dddd..",
+           "........"],
+    seven: [".tttttt.",
+            ".tttttt.",
+            ".....tt.",
+            "....tt..",
+            "...tt...",
+            "..tt....",
+            "..tt....",
+            "..tt...."],
+    cherry: [".....gg.",
+             "....gg..",
+             "...gg...",
+             "..rrrr..",
+             ".rwrrrr.",
+             ".rrrrrr.",
+             ".rrrrrr.",
+             "..rrrr.."],
+    bell: ["...bb...",
+           "..bbbb..",
+           "..bbbb..",
+           ".bbbbbb.",
+           ".bbbbbb.",
+           "bbbbbbbb",
+           "........",
+           "...bb..."],
+    bar: ["........",
+          "cccccccc",
+          "c......c",
+          "c.cccc.c",
+          "c.cccc.c",
+          "c......c",
+          "cccccccc",
+          "........"],
+    coin: ["..oooo..",
+           ".oyyyyo.",
+           "oyyoyyyo",
+           "oyoooyyo",
+           "oyoyyyyo",
+           "oyyoyyyo",
+           ".oyyyyo.",
+           "..oooo.."]
+  };
+
+  function sprite(name) {
+    var grid = SPRITES[name], out = "", y, x, row, ch, run;
+    for (y = 0; y < grid.length; y++) {
+      row = grid[y];
+      x = 0;
+      while (x < row.length) {
+        ch = row.charAt(x);
+        if (ch === ".") { x++; continue; }
+        run = 1;
+        while (row.charAt(x + run) === ch) run++;
+        out += '<rect x="' + x + '" y="' + y + '" width="' + run +
+               '" height="1" fill="' + PAL[ch] + '"/>';
+        x += run;
+      }
+    }
+    return '<svg viewBox="0 0 8 8" aria-hidden="true">' + out + "</svg>";
+  }
+
+  /* --- Reels -----------------------------------------------------------
+     These are virtual reel strips, not seven equally likely faces. Every stop
+     is equally likely, but common symbols occupy more stops than rare ones.
+     The three strips deliberately have different counts. Across all 13,824
+     stop combinations the paytable below returns exactly 95.2980324%, with a
+     33.0656829% hit frequency. A coin pair refunds the pull: frequent enough
+     to reward the physical ritual without making the credit supply endless. */
+
+  var REELS = [
+    ["cherry", "coin", "four", "bell", "coin", "bar", "zero", "coin",
+     "cherry", "bell", "four", "coin", "bar", "bell", "zero", "seven",
+     "coin", "bell", "cherry", "four", "bar", "coin", "zero", "cherry"],
+    ["zero", "cherry", "coin", "four", "bell", "bar", "zero", "bar",
+     "coin", "cherry", "four", "bell", "zero", "coin", "cherry", "seven",
+     "four", "coin", "bell", "coin", "zero", "bar", "coin", "cherry"],
+    ["four", "coin", "cherry", "bar", "zero", "bell", "coin", "four",
+     "coin", "bar", "cherry", "zero", "four", "coin", "seven", "cherry",
+     "bar", "coin", "zero", "bell", "four", "bell", "coin", "cherry"]
+  ];
+  var LABELS = { four: "4", zero: "0", cherry: "cherry", seven: "seven",
+                 bell: "bell", bar: "bar", coin: "coin" };
+  var COPIES = 7;
+
+  var strips = [].slice.call(document.querySelectorAll(".strip"));
+  strips.forEach(function (strip, reel) {
+    var markup = "";
+    for (var c = 0; c < COPIES; c++) {
+      REELS[reel].forEach(function (face) { markup += sprite(face); });
+    }
+    strip.innerHTML = markup;
+  });
+
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function tileHeight(strip) {
+    return strip.firstElementChild.getBoundingClientRect().height;
+  }
+
+  function place(strip, px) {
+    /* Whole pixels only. A fractional translate would resample the sprite and
+       undo the crisp edges the SVG went to the trouble of producing. */
+    strip.style.transform = "translateY(" + -Math.round(px) + "px)";
+  }
+
+  function spin(strip, reel, index, loops, duration) {
+    return new Promise(function (done) {
+      var tile = tileHeight(strip);
+      /* Keep the final animated stop inside the rendered strip. The suspense
+         spin used to travel seven loops through seven copies, exposing blank
+         space before settle() snapped the reel back to its result. */
+      loops = Math.min(loops, COPIES - 1);
+      var end = (loops * REELS[reel].length + index) * tile;
+
+      function settle() {
+        place(strip, index * tile);
+        done();
+      }
+
+      if (still.matches) { settle(); return; }
+
+      var t0 = performance.now();
+      requestAnimationFrame(function step(now) {
+        var t = Math.min(1, (now - t0) / duration);
+        var eased = 1 - Math.pow(1 - t, 4);   /* fast out, long coast down */
+        place(strip, end * eased);
+        if (t < 1) requestAnimationFrame(step);
+        else settle();
+      });
+    });
+  }
+
+  /* --- Coins ----------------------------------------------------------- */
+
+  var coinField = document.getElementById("coins");
+  var tray = document.getElementById("tray");
+  var trayPile = document.getElementById("tray-pile");
+  var trayTotal = document.getElementById("tray-total");
+  var slot = document.querySelector(".slot");
+  var trayPaid = 0;
+
+  function fillTray(total) {
+    trayPaid = total;
+    trayTotal.textContent = "$" + trayPaid;
+    trayPile.innerHTML = "";
+    for (var i = 0; i < Math.min(12, trayPaid); i++) {
+      var coin = document.createElement("i");
+      coin.innerHTML = sprite("coin");
+      trayPile.appendChild(coin);
+    }
+  }
+
+  function payCoins(n) {
+    var box = tray.getBoundingClientRect();
+    var frame = slot.getBoundingClientRect();
+    var originX = box.left - frame.left + box.width / 2;
+    var originY = box.top - frame.top;
+
+    fillTray(bank);
+    for (var i = 0; i < Math.min(n, 12); i++) {
+      var coin = document.createElement("div");
+      coin.className = "coin";
+      coin.innerHTML = sprite("coin");
+      coin.style.left = originX + "px";
+      coin.style.top = originY + "px";
+      coin.style.setProperty("--dx", (Math.random() * 260 - 130).toFixed(0) + "px");
+      coin.style.setProperty("--peak", (-60 - Math.random() * 90).toFixed(0) + "px");
+      coin.style.setProperty("--dy", (60 + Math.random() * 120).toFixed(0) + "px");
+      coin.style.animationDelay = (i * 35) + "ms";
+      coinField.appendChild(coin);
+      coin.addEventListener("animationend", function () { this.remove(); });
+    }
+  }
+
+  /* --- Where the reader probably meant to go ---------------------------
+     Built from the site itself, so it cannot rot into a list of dead links
+     the way a hand-written one would. */
+
+  var DESTINATIONS = [
+    {% for post in site.posts limit: 12 %}
+    { title: {{ post.title | jsonify }}, url: {{ post.url | jsonify }} },
+    {% endfor %}
+    {% for item in site.data.navigation %}{% unless item.url == "/" %}
+    { title: {{ item.name | jsonify }}, url: {{ item.url | jsonify }} },
+    {% endunless %}{% endfor %}
+    { title: "Maximizing expected turn score in Hog", url: "/papers/hog/" }
+  ];
+
+  /* --- The machine ----------------------------------------------------- */
+
+  var verdict = document.getElementById("verdict");
+  var payout = document.getElementById("payout");
+  var spentEl = document.getElementById("spent");
+  var wonEl = document.getElementById("won");
+  var lever = document.getElementById("lever");
+  var arm = document.getElementById("lever-arm");
+  var coinSlot = document.getElementById("coin-slot");
+  var slotSource = document.getElementById("slot-source");
+  var dollarCoin = document.getElementById("dollar-coin");
+  var marquee = document.getElementById("marquee");
+  var marqueeText = document.getElementById("marquee-text");
+  var walletCoinsEl = document.getElementById("wallet-coins");
+
+  var spent = 0;
+  var won = 0;
+  var bank = 0;
+  var state = "empty";
+  var prizePick = null;
+
+  var LOCKED_STATES = {
+    inserting: true,
+    spinning: true,
+    suspense: true,
+    settling: true,
+    payout: true
+  };
+
+  function setState(next) {
+    state = next;
+    slot.setAttribute("data-state", next);
+    lever.disabled = !!LOCKED_STATES[next];
+    updateInsertionControls();
+    lever.setAttribute(
+      "aria-disabled",
+      next === "empty" || next === "ready" ? "false" : "true"
+    );
+  }
+
+  function updateInsertionControls() {
+    var open = state === "empty";
+    dollarCoin.disabled = !open;
+    coinSlot.disabled = !open;
+    slotSource.textContent = "Add $1";
+    coinSlot.setAttribute(
+      "aria-label",
+      "Add one dollar to bank through coin slot; current balance $" + bank
+    );
+    tray.setAttribute(
+      "aria-label",
+      "Bank balance: $" + bank
+    );
+  }
+
+  function lockPrize() {
+    payout.innerHTML = '<span class="payout-line prize-locked">Win to unlock a lucky link</span>';
+  }
+
+  function revealPrize() {
+    if (!prizePick) {
+      prizePick = DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
+    }
+    payout.innerHTML = '<span class="payout-line">Cash out: <a href="' +
+      prizePick.url + '">' + prizePick.title + "</a></span>";
+  }
+
+  function updateMoney() {
+    spentEl.textContent = "$" + spent;
+    wonEl.textContent = "$" + won;
+    updateInsertionControls();
+  }
+
+  function buildCoin() {
+    walletCoinsEl.innerHTML = "";
+    for (var i = 0; i < 3; i++) {
+      var token = document.createElement("i");
+      token.className = "wallet-coin wallet-coin-" + i;
+      token.innerHTML = sprite("coin") + (i === 2 ? "<small>$1</small>" : "");
+      walletCoinsEl.appendChild(token);
+    }
+  }
+
+  function announce(text, hit) {
+    verdict.textContent = text;
+    verdict.classList.toggle("hit", !!hit);
+  }
+
+  /* The marquee is the machine's expression: the verdict explains the result
+     while this gives each beat of the pull a little personality. It remains
+     aria-hidden because the live verdict already announces the same state. */
+  function react(text, state) {
+    marqueeText.textContent = text;
+    marquee.className = "marquee" + (state ? " " + state : "");
+  }
+
+  var THREE_KIND = {
+    seven: 100,
+    bar: 40,
+    bell: 30,
+    cherry: 15,
+    coin: 10,
+    zero: 8,
+    four: 5
+  };
+
+  function outcomeFor(faces) {
+    var a = faces[0], b = faces[1], c = faces[2];
+
+    if (a === "four" && b === "zero" && c === "four") {
+      return { prize: 0, verdict: "404 · no payout", marquee: "404 AGAIN", mood: "found" };
+    }
+    if (a === b && b === c) {
+      var prize = THREE_KIND[a];
+      return {
+        prize: prize,
+        verdict: a === "seven" ? "Jackpot! +$100" : LABELS[a] + " win! +$" + prize,
+        marquee: a === "seven" ? "JACKPOT!" : "WINNER!",
+        mood: a === "seven" ? "jackpot" : "win"
+      };
+    }
+    var pairPays = { cherry: 3, bell: 2, bar: 2, coin: 1 };
+    for (var face in pairPays) {
+      if (faces.filter(function (shown) { return shown === face; }).length === 2) {
+        var pairPrize = pairPays[face];
+        return {
+          prize: pairPrize,
+          verdict: LABELS[face] + " pair! +$" + pairPrize,
+          marquee: "WINNER!",
+          mood: "win"
+        };
+      }
+    }
+    if (a === b || b === c || a === c) {
+      return { prize: 0, verdict: "Close · no win", marquee: "SO CLOSE", mood: "miss" };
+    }
+    return { prize: 0, verdict: "No win", marquee: "TRY AGAIN", mood: "miss" };
+  }
+
+  function randomStop(reel) {
+    return Math.floor(Math.random() * REELS[reel].length);
+  }
+
+  function bumpMachine(reel) {
+    var reelEl = strips[reel].parentElement;
+    reelEl.classList.remove("stopped");
+    slot.classList.remove("bump");
+    void slot.offsetWidth;
+    reelEl.classList.add("stopped");
+    slot.classList.add("bump");
+    setTimeout(function () {
+      reelEl.classList.remove("stopped");
+      slot.classList.remove("bump");
+    }, 130);
+  }
+
+  function finishRound(faces, result) {
+    slot.classList.remove("suspense");
+    setState("empty");
+    lever.setAttribute(
+      "aria-label",
+      "Pull the lever to spin. Reels: " +
+        faces.map(function (f) { return LABELS[f]; }).join(", ") +
+        ". Bank balance: $" + bank + "."
+    );
+  }
+
+  function revealResult(faces) {
+    var result = outcomeFor(faces);
+    var revealDelay = still.matches ? 0 : 150;
+    var payoutDelay = still.matches ? 0 : 250;
+
+    setState("settling");
+    setTimeout(function () {
+      announce(result.verdict, result.prize > 0);
+      react(result.marquee, result.mood);
+
+      if (result.prize > 0) {
+        setState("payout");
+        setTimeout(function () {
+          won += result.prize;
+          bank += result.prize;
+          updateMoney();
+          revealPrize();
+          payCoins(result.prize);
+          setTimeout(function () {
+            finishRound(faces, result);
+          }, still.matches ? 0 : 650);
+        }, payoutDelay);
+      } else {
+        finishRound(faces, result);
+      }
+    }, revealDelay);
+  }
+
+  function beginSpin() {
+    if (bank < 1) {
+      announce("Bank empty · add $1");
+      react("ADD $1", "miss");
+      lever.classList.remove("locked");
+      void lever.offsetWidth;
+      lever.classList.add("locked");
+      setState("empty");
+      return;
+    }
+    if (state !== "ready" && state !== "pulling") return;
+
+    setState("spinning");
+    bank--;
+    fillTray(bank);
+    updateMoney();
+
+    var picks = REELS.map(function (_, reel) { return randomStop(reel); });
+    var faces = picks.map(function (stop, reel) { return REELS[reel][stop]; });
+    var suspense = !still.matches && faces[0] === faces[1];
+
+    announce("· · ·");
+    react("GOOD LUCK", "spinning");
+
+    var reelOne = spin(strips[0], 0, picks[0], 3, 850).then(function () {
+      bumpMachine(0);
+    });
+    var reelTwo = spin(strips[1], 1, picks[1], 4, 1200).then(function () {
+      bumpMachine(1);
+      if (suspense) {
+        setState("suspense");
+        slot.classList.add("suspense");
+        react("WAIT...", "suspense");
+      }
+    });
+    var reelThree = spin(
+      strips[2], 2, picks[2], suspense ? 6 : 5, suspense ? 2150 : 1550
+    ).then(function () { bumpMachine(2); });
+
+    Promise.all([reelOne, reelTwo, reelThree]).then(function () {
+      revealResult(faces);
+    });
+  }
+
+  function depositDollar(source, e) {
+    if (state !== "empty") return;
+    setState("inserting");
+
+    var sourceBox = source.getBoundingClientRect();
+    var mouthBox = coinSlot.querySelector(".coin-slot-mouth").getBoundingClientRect();
+    var frameBox = slot.getBoundingClientRect();
+    var inserted = document.createElement("i");
+    inserted.className = "inserted-coin";
+    inserted.setAttribute("aria-hidden", "true");
+    inserted.innerHTML = sprite("coin");
+    inserted.style.left = (sourceBox.left - frameBox.left) + "px";
+    inserted.style.top = (sourceBox.top - frameBox.top) + "px";
+    inserted.style.setProperty(
+      "--coin-dx",
+      (mouthBox.left + mouthBox.width / 2 - sourceBox.left - sourceBox.width / 2) + "px"
+    );
+    inserted.style.setProperty(
+      "--coin-dy",
+      (mouthBox.top + mouthBox.height / 2 - sourceBox.top - sourceBox.height / 2) + "px"
+    );
+    slot.appendChild(inserted);
+
+    spent++;
+    updateMoney();
+
+    coinSlot.classList.remove("clunk");
+    announce("Adding $1 to bank");
+    react("NEW MONEY", "ready");
+
+    var clunkDelay = still.matches ? 0 : 210;
+    var creditDelay = still.matches ? 0 : 300;
+    setTimeout(function () {
+      coinSlot.classList.add("clunk");
+    }, clunkDelay);
+    setTimeout(function () {
+      inserted.remove();
+      bank++;
+      fillTray(bank);
+      updateMoney();
+      setState("empty");
+      announce("Banked $1");
+      react(
+        spent === 5 ? "FIVE BUCKS IN" :
+        spent === 10 ? "TEN DOLLARS?" : "BANK $" + bank,
+        "ready"
+      );
+      lever.setAttribute(
+        "aria-label",
+        "Pull the lever to spin. Bank balance: $" + bank +
+          ". Total spent: $" + spent + "."
+      );
+      /* Keyboard users advance naturally to the lever; pointer users keep
+         their scroll position and do not get a synthetic focus ring. */
+      if (e.detail === 0) lever.focus({ preventScroll: true });
+    }, creditDelay);
+  }
+
+  function depositFreshDollar(e) {
+    depositDollar(walletCoinsEl.lastElementChild, e);
+  }
+
+  dollarCoin.addEventListener("click", depositFreshDollar);
+  coinSlot.addEventListener("click", function (e) {
+    depositFreshDollar(e);
+  });
+
+  function resetMachine() {
+    spent = 0;
+    won = 0;
+    bank = 0;
+    trayPaid = 0;
+    prizePick = null;
+    coinField.innerHTML = "";
+    buildCoin();
+    fillTray(0);
+    updateMoney();
+    lockPrize();
+    announce("Page not found");
+    react("LUCKY BREAK", "");
+    ["four", "zero", "four"].forEach(function (face, reel) {
+      place(strips[reel], REELS[reel].indexOf(face) * tileHeight(strips[reel]));
+    });
+    lever.setAttribute(
+      "aria-label",
+      "Pull the lever. Click the dollar stack or coin slot to add money to the bank."
+    );
+    setState("empty");
+  }
+
+  /* --- Lever -----------------------------------------------------------
+     The lever is the control, not an ornament next to one: it takes a drag, a
+     click and a keypress.
+
+     --pull runs 0 to 1 over a drag of one rod length, so the knob keeps pace
+     with the finger rather than racing ahead of it or lagging behind. The CSS
+     turns that into foreshortening; see the .lever-arm rule. */
+
+  var TRAVEL = 90;   /* px of drag for a full pull */
+  var dragging = false, startY = 0, drawn = 0, dragged = false;
+
+  function setPull(v) { arm.style.setProperty("--pull", v); }
+
+  lever.addEventListener("pointerdown", function (e) {
+    if (state !== "empty" && state !== "ready") return;
+    dragging = true;
+    dragged = false;
+    startY = e.clientY;
+    arm.classList.remove("release");
+    setState("pulling");
+    lever.setPointerCapture(e.pointerId);
+  });
+
+  lever.addEventListener("pointermove", function (e) {
+    if (!dragging) return;
+    drawn = Math.max(0, Math.min(1, (e.clientY - startY) / TRAVEL));
+    if (drawn > 0.06) dragged = true;
+    setPull(drawn);
+  });
+
+  function letGo(cancelled) {
+    if (!dragging) return;
+    dragging = false;
+    arm.classList.add("release");
+    setPull(0);
+    if (!cancelled && drawn >= 0.5) beginSpin();
+    else setState("empty");
+    drawn = 0;
+  }
+
+  lever.addEventListener("pointerup", function () { letGo(false); });
+  lever.addEventListener("pointercancel", function () {
+    dragged = false;
+    letGo(true);
+  });
+
+  lever.addEventListener("click", function () {
+    /* A finished drag already pulled; without this the click that follows it
+       would spin a second time. */
+    if (dragged) { dragged = false; return; }
+    if (state !== "empty" && state !== "ready") return;
+
+    arm.classList.add("release");
+    if (bank < 1) {
+      setPull(0.18);
+      setTimeout(function () { setPull(0); }, still.matches ? 0 : 120);
+      beginSpin();
+      return;
+    }
+
+    setState("pulling");
+    setPull(1);
+    setTimeout(function () {
+      setPull(0);
+      beginSpin();
+    }, still.matches ? 0 : 160);
+  });
+
+  /* Start at rest on 4-0-4. This is presentation, not a spin: it records no
+     spend, pays nothing and leaves the page's purpose clear before input. */
+  resetMachine();
+})();
+</script>

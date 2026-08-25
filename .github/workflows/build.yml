@@ -17,5 +17,8 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
 
+      - name: Check 404 slot odds
+        run: ruby script/check_404_slot.rb
+
       - name: Build site
         run: bundle exec jekyll build

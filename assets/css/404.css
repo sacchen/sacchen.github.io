@@ -1,0 +1,811 @@
+/* The slot machine on /404.html.
+ *
+ * A 404 is the one page nobody arrived at on purpose, so it is the only place
+ * on this site where a gimmick costs nothing. The machine is not decoration
+ * for its own sake: the payout line is a real page, so the joke doubles as the
+ * "here is where you probably meant to go" that a 404 owes the reader.
+ *
+ * Everything is drawn from an 8x8 pixel grid. The sprites are inline SVG built
+ * in 404.html from string maps -- no image files, no webfont -- and every
+ * length here is a multiple of --px, the size of one sprite pixel. Keeping to
+ * that multiple is what makes the thing read as 1983 rather than as a CSS
+ * gradient: no blur, no border-radius, no subpixel anything.
+ *
+ * The cabinet stays dark in both colour schemes. Arcade cabinets are dark; a
+ * light-mode slot machine would be a photograph of a slot machine. Only the
+ * page around it follows the site tokens.
+ */
+
+.slot {
+  /* One sprite pixel. Everything else is a multiple of it, so the whole
+     machine scales as one unit and never lands on a half pixel. */
+  --px: clamp(5px, 1.125vw + 2px, 7px);
+  --tile: calc(var(--px) * 8);
+  --notch: calc(var(--px) * 2);
+
+  --cab-dark: #0f0a1e;
+  --cab: #241748;
+  --cab-lit: #3a2470;
+  --magenta: #ff2d95;
+  --cyan: #22d3ee;
+  --amber: #ffb020;
+  --glass: #08050f;
+  --chrome: #cfc9e6;
+
+  /* .slot is the positioning context: coins have to fly outside the cabinet,
+     and .cab's clip-path would shear them off at its edge. */
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin: calc(var(--px) * 6) 0 calc(var(--px) * 4);
+}
+
+/* Every length here is a multiple of --px; content-box would silently add the
+   padding and border back on top and break that. Scoped to .slot rather than
+   applied as a global reset, because nothing else on the site needs one. */
+.slot, .slot *, .slot *::before, .slot *::after { box-sizing: border-box; }
+
+/* --- Cabinet --- */
+
+.cab {
+  position: relative;
+  /* Slot machines are tall and narrow. Left to itself the cabinet would
+     stretch to the width of the payout line and come out square, with the
+     reels adrift in the middle of it. Four tiles puts the glass at about
+     two-thirds of the face, which is the proportion a real machine has, and
+     leaves the payout line three of its own. */
+  width: min(100%, calc(var(--tile) * 4 + var(--px) * 14));
+  padding: calc(var(--px) * 3);
+  background: var(--cab);
+  border: var(--px) solid var(--cab-dark);
+  /* Hard bevel instead of a rounded corner: two flat pixels cut off each
+     corner, which is how a low-resolution sprite fakes a curve. */
+  clip-path: polygon(
+    var(--notch) 0, calc(100% - var(--notch)) 0,
+    100% var(--notch), 100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%, var(--notch) 100%,
+    0 calc(100% - var(--notch)), 0 var(--notch)
+  );
+  /* One unblurred pixel of offset. A blurred shadow would be the only soft
+     edge on the page, and a second step fanned into visible wedges where the
+     clip-path cuts the corners diagonally. */
+  box-shadow: var(--px) var(--px) 0 rgba(0, 0, 0, 0.3);
+}
+
+/* --- Marquee --- */
+
+.marquee {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--px);
+  padding: var(--px) 0 calc(var(--px) * 2);
+}
+
+.marquee b {
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 2.2);
+  font-weight: 700;
+  letter-spacing: calc(var(--px) * 0.25);
+  color: var(--magenta);
+  padding: 0 calc(var(--px) / 2);
+  white-space: nowrap;
+}
+
+/* The sign doubles as the machine's face. Result classes are set alongside
+   the live verdict, so this remains a visual flourish rather than a second
+   announcement for screen readers. */
+.marquee.ready b,
+.marquee.win b { color: var(--amber); }
+
+.marquee.spinning b,
+.marquee.suspense b,
+.marquee.found b { color: var(--cyan); }
+
+.marquee.miss b { color: var(--chrome); }
+
+.marquee.spinning .bulb { animation-duration: 0.35s; }
+
+.marquee.suspense .bulb {
+  animation: none;
+  opacity: 1;
+  background: var(--magenta);
+}
+
+.marquee.win .bulb,
+.marquee.jackpot .bulb {
+  animation: marquee-win 0.18s steps(1) 6;
+}
+
+.marquee.jackpot b {
+  color: #fff;
+  animation: flash 0.18s steps(1) 8;
+}
+
+@keyframes marquee-win {
+  0%, 50% { background: var(--amber); opacity: 1; }
+  51%, 100% { background: var(--magenta); opacity: 0.3; }
+}
+
+.bulb {
+  width: var(--px);
+  height: var(--px);
+  background: var(--amber);
+  animation: bulb 1.4s steps(1) infinite;
+}
+
+/* Bulbs chase rather than pulse: each one holds for a beat, which is what a
+   ring of incandescent marquee bulbs actually does. */
+@keyframes bulb {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0.18; }
+}
+
+.bulb:nth-child(even) { animation-delay: 0.7s; }
+
+/* --- Score strip --- */
+
+.readout {
+  display: flex;
+  justify-content: space-between;
+  gap: calc(var(--px) * 2);
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 1.9);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  background: var(--glass);
+  border: var(--px) solid var(--cab-dark);
+  padding: var(--px) calc(var(--px) * 1.5);
+  margin-bottom: calc(var(--px) * 2);
+}
+
+.readout span { color: var(--amber); }
+
+/* --- Reels --- */
+
+.window {
+  position: relative;
+  display: flex;
+  /* Sized to the three reels and centred, so the glass is a window in the
+     cabinet rather than a black band across it. */
+  width: fit-content;
+  margin: 0 auto;
+  gap: var(--px);
+  padding: var(--px);
+  background: var(--cab-dark);
+  overflow: hidden;
+}
+
+.reel {
+  position: relative;
+  width: var(--tile);
+  height: var(--tile);
+  overflow: hidden;
+  background: var(--glass);
+}
+
+.reel.stopped { animation: reel-stop 130ms steps(2, end); }
+
+@keyframes reel-stop {
+  0%, 49% { transform: translateY(1px); }
+  50%, 100% { transform: translateY(0); }
+}
+
+.slot.bump { animation: cabinet-bump 130ms steps(2, end); }
+
+@keyframes cabinet-bump {
+  0%, 49% { transform: translateY(1px); }
+  50%, 100% { transform: translateY(0); }
+}
+
+.slot.suspense .window { background: var(--magenta); }
+.slot.suspense .window::before { opacity: 1; }
+
+/* The strip is taller than the reel; only the one tile inside .reel shows.
+   JS translates it in whole pixels, never fractions. */
+.strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--tile);
+  will-change: transform;
+}
+
+.strip svg {
+  display: block;
+  width: var(--tile);
+  height: var(--tile);
+  /* Integer-aligned rects with no antialiasing -- the whole point. */
+  shape-rendering: crispEdges;
+}
+
+/* CRT scanlines over the glass. Two-pixel period so it survives the scale. */
+.window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.28) 0 1px,
+    transparent 1px calc(var(--px) / 2 + 1px)
+  );
+}
+
+/* The payline: a single lit row across the middle of the glass. */
+.window::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  transform: translateY(-0.5px);
+  background: var(--magenta);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- Result --- */
+
+.verdict {
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 2.4);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--amber);
+  margin: calc(var(--px) * 2.5) 0 var(--px);
+}
+
+.verdict.hit {
+  color: var(--magenta);
+  animation: flash 0.28s steps(1) 6;
+}
+
+@keyframes flash {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.25; }
+}
+
+.payout {
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 1.9);
+  text-align: center;
+  color: var(--chrome);
+  /* A fixed height, not a minimum. The payout line is rewritten with a new
+     post title after every spin, and any title that wrapped to one more line
+     than the last one used to resize the whole cabinet mid-game. Three lines
+     at this measure holds every current title; the clamp below takes care of
+     anything longer without the box ever growing. */
+  height: calc(var(--px) * 7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 var(--px);
+  line-height: 1.5;
+}
+
+/* Long titles end in an ellipsis rather than pushing the tray down. The fixed
+   height above is what actually guarantees the cabinet holds still; this only
+   decides whether the overflow looks deliberate or looks cut off. */
+.payout-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.payout a {
+  color: var(--cyan);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.payout a:hover { color: var(--magenta); }
+
+.prize-locked { color: #8e88a5; }
+
+/* --- Paytable, coin slot and tray --- */
+
+.payglass {
+  color: var(--chrome);
+  background: #171027;
+  border: var(--px) solid var(--cab-dark);
+  padding: var(--px);
+  box-shadow: inset 0 var(--px) 0 #30204d;
+}
+
+.payglass-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--px);
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 1.45);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.paytable {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  column-gap: var(--px);
+  row-gap: calc(var(--px) / 2);
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 1.3);
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.paytable span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.paytable b {
+  color: var(--cyan);
+  font-size: calc(var(--px) * 1.45);
+}
+
+.coin-deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--px) * 1.5);
+  padding: calc(var(--px) * 2) var(--px) var(--px);
+  background: var(--cab-lit);
+  border-left: var(--px) solid var(--cab-dark);
+  border-right: var(--px) solid var(--cab-dark);
+}
+
+.wallet {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(var(--px) * 23);
+  min-height: calc(var(--px) * 6);
+  padding: 0 var(--px);
+  color: var(--chrome);
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 1.15);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.wallet-label b { color: var(--amber); }
+
+.wallet-coins {
+  position: relative;
+  display: block;
+  width: calc(var(--px) * 6);
+  height: calc(var(--px) * 5);
+}
+
+.wallet-coin-button {
+  display: block;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+.wallet-coin-button:hover .wallet-coin { transform: translateY(calc(var(--px) * -1)); }
+.wallet-coin-button:active .wallet-coin { transform: translateY(var(--px)); }
+.wallet-coin-button:disabled { cursor: wait; }
+.wallet-coin-button:focus-visible { outline: var(--px) solid var(--cyan); outline-offset: var(--px); }
+
+.wallet-coin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(var(--px) * 4);
+  height: calc(var(--px) * 5);
+  transition: opacity 80ms steps(1);
+}
+
+.wallet-coin-0 { left: 0; opacity: 0.45; }
+.wallet-coin-1 { left: calc(var(--px) * 0.75); opacity: 0.7; }
+.wallet-coin-2 { left: calc(var(--px) * 1.5); }
+
+.wallet-coin svg {
+  display: block;
+  width: calc(var(--px) * 4);
+  height: calc(var(--px) * 4);
+  shape-rendering: crispEdges;
+}
+
+.wallet-coin small {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  color: var(--amber);
+  font: inherit;
+  font-size: calc(var(--px) * 0.8);
+}
+
+.coin-slot {
+  position: relative;
+  display: grid;
+  grid-template-columns: calc(var(--px) * 5) auto;
+  grid-template-rows: auto auto;
+  column-gap: var(--px);
+  align-items: center;
+  min-width: calc(var(--px) * 23);
+  padding: var(--px) calc(var(--px) * 2);
+  border: var(--px) solid var(--cab-dark);
+  color: var(--amber);
+  background: var(--glass);
+  box-shadow:
+    var(--px) var(--px) 0 var(--cab-dark),
+    inset 0 var(--px) 0 #332849;
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 1.4);
+  font-weight: 700;
+  line-height: 1;
+  text-align: left;
+  text-transform: uppercase;
+  appearance: none;
+  cursor: pointer;
+}
+
+.coin-slot:hover { color: var(--cyan); }
+.coin-slot:disabled { cursor: wait; }
+.coin-slot:focus-visible { outline: var(--px) solid var(--cyan); outline-offset: var(--px); }
+
+.coin-slot.clunk {
+  transform: translate(var(--px), var(--px));
+  box-shadow: inset 0 var(--px) 0 #332849;
+}
+
+.coin-slot.clunk { animation: coin-clunk 220ms steps(2, end); }
+
+@keyframes coin-clunk {
+  0%, 60% { transform: translate(var(--px), var(--px)); }
+  61%, 100% { transform: translate(0, 0); }
+}
+
+.coin-slot small {
+  grid-column: 2;
+  color: var(--chrome);
+  font: inherit;
+  font-size: calc(var(--px) * 1.05);
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.coin-slot-mouth {
+  grid-row: 1 / 3;
+  width: calc(var(--px) * 5);
+  height: calc(var(--px) * 7);
+  background: #08050f;
+  border: var(--px) solid #6f6a86;
+  box-shadow: inset 0 0 0 var(--px) var(--cab-dark);
+  position: relative;
+}
+
+.coin-slot-mouth::after {
+  content: "";
+  position: absolute;
+  left: var(--px);
+  top: var(--px);
+  width: var(--px);
+  height: calc(var(--px) * 3);
+  background: var(--amber);
+}
+
+.inserted-coin {
+  position: absolute;
+  z-index: 5;
+  display: block;
+  width: calc(var(--px) * 4);
+  height: calc(var(--px) * 4);
+  pointer-events: none;
+  animation: coin-in 300ms steps(6, end) forwards;
+}
+
+.inserted-coin svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  shape-rendering: crispEdges;
+}
+
+@keyframes coin-in {
+  0% { transform: translateY(0) scaleX(1); opacity: 1; }
+  65% { transform: translate(var(--coin-dx), var(--coin-dy)) scaleX(-1); opacity: 1; }
+  99% { opacity: 1; }
+  100% { transform: translate(var(--coin-dx), var(--coin-dy)) scaleX(1); opacity: 0; }
+}
+
+.tray {
+  display: block;
+  width: 100%;
+  height: calc(var(--px) * 10);
+  padding: 0;
+  background: var(--glass);
+  border: var(--px) solid var(--cab-dark);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.tray::after {
+  /* The mouth the coins come out of. */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(var(--px) * 10);
+  height: var(--px);
+  transform: translateX(-50%);
+  background: var(--cab-dark);
+}
+
+.tray-label {
+  position: absolute;
+  top: var(--px);
+  left: var(--px);
+  z-index: 1;
+  color: var(--chrome);
+  font-family: var(--mono);
+  font-size: calc(var(--px) * 1.15);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tray-label b { color: var(--amber); }
+
+.tray-pile {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: calc(var(--px) * 17);
+  height: calc(var(--px) * 5);
+  transform: translateX(-50%);
+  display: flex;
+  flex-flow: row wrap-reverse;
+  align-content: flex-start;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tray-pile i {
+  display: block;
+  width: calc(var(--px) * 3);
+  height: calc(var(--px) * 3);
+  margin-left: calc(var(--px) * -1);
+  margin-top: calc(var(--px) * -1);
+}
+
+.tray-pile svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  shape-rendering: crispEdges;
+}
+
+/* Coins live outside .cab, not in the tray: .cab is clip-path'd to get its
+   bevelled corners, and a clip-path shears its descendants, so a coin thrown
+   past the cabinet edge would be cut in half. JS reads the tray's position and
+   spawns them here instead. */
+.coins {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 3;
+}
+
+.coin {
+  position: absolute;
+  width: calc(var(--px) * 4);
+  height: calc(var(--px) * 4);
+  /* steps() is doing the work here: the coin jumps between eight discrete
+     positions instead of gliding, which is what makes it look drawn rather
+     than tweened. */
+  animation: coin-fly 900ms steps(9, end) forwards;
+}
+
+.coin svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  shape-rendering: crispEdges;
+}
+
+@keyframes coin-fly {
+  0% { transform: translate(0, 0) scaleX(1); opacity: 1; }
+  40% { transform: translate(calc(var(--dx) * 0.55), var(--peak)) scaleX(-1); }
+  99% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scaleX(1); opacity: 0; }
+}
+
+/* --- Lever --- */
+
+.lever-mount {
+  position: relative;
+  /* Negative margin tucks the socket under the cabinet's edge. Without it the
+     lever floats beside the machine looking like a separate object. */
+  margin-left: calc(var(--px) * -2);
+  margin-top: calc(var(--px) * 14);
+  width: calc(var(--px) * 9);
+  height: calc(var(--tile) * 3);
+  flex: none;
+  z-index: 2;
+}
+
+.lever {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: calc(var(--px) * 9);
+  height: calc(var(--px) * 20);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lever:active { cursor: grabbing; }
+
+.lever:disabled {
+  cursor: wait;
+}
+
+.lever.locked .lever-knob { animation: lever-locked 180ms steps(3, end); }
+
+@keyframes lever-locked {
+  0%, 100% { transform: translateX(0); }
+  33% { transform: translateX(calc(var(--px) * -1)); }
+  66% { transform: translateX(var(--px)); }
+}
+
+/* The ball socket the arm pivots in. */
+.lever::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: calc(var(--px) * 9);
+  height: calc(var(--px) * 4);
+  background: var(--cab-dark);
+  clip-path: polygon(
+    var(--px) 0, calc(100% - var(--px)) 0, 100% var(--px),
+    100% 100%, 0 100%, 0 var(--px)
+  );
+}
+
+/* --pull runs 0 (at rest) to 1 (fully pulled).
+ *
+ * A lever on the right of a machine is pulled toward you, out of the screen,
+ * not swung sideways across it. You cannot rotate out of the page in 2D, so
+ * this fakes the foreshortening the way an animator would: the rod loses
+ * height as it swings at you, and the knob grows as it gets nearer. The small
+ * rotation is there to keep it from reading as a rod sinking straight down
+ * into its socket. */
+.lever-arm {
+  position: absolute;
+  left: calc(var(--px) * 3);
+  bottom: calc(var(--px) * 2);
+  width: calc(var(--px) * 3);
+  --rod: calc(var(--px) * 17);
+  height: calc(var(--rod) * (1 - var(--pull, 0) * 0.55));
+  transform-origin: 50% 100%;
+  transform: rotate(calc(var(--pull, 0) * 7deg));
+  background: linear-gradient(
+    to right,
+    #6f6a86 0 var(--px),
+    var(--chrome) var(--px) calc(var(--px) * 2),
+    #6f6a86 calc(var(--px) * 2) 100%
+  );
+}
+
+/* Snap back only when the hand lets go; while dragging, --pull tracks the
+   pointer and any transition would lag behind it. */
+.lever-arm.release,
+.lever-arm.release .lever-knob {
+  transition: transform 180ms cubic-bezier(0.2, 1.5, 0.4, 1),
+              height 180ms cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+
+.lever-knob {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--px) * -2);
+  width: calc(var(--px) * 6);
+  height: calc(var(--px) * 6);
+  margin-left: calc(var(--px) * -3);
+  transform: scale(calc(1 + var(--pull, 0) * 0.5));
+  background: #e02040;
+  clip-path: polygon(
+    calc(var(--px) * 2) 0, calc(100% - var(--px) * 2) 0,
+    100% calc(var(--px) * 2), 100% calc(100% - var(--px) * 2),
+    calc(100% - var(--px) * 2) 100%, calc(var(--px) * 2) 100%,
+    0 calc(100% - var(--px) * 2), 0 calc(var(--px) * 2)
+  );
+  /* Two flat inset pixels stand in for a specular highlight. A gradient would
+     be smoother and wronger. */
+  box-shadow:
+    inset var(--px) var(--px) 0 #ff7a92,
+    inset calc(var(--px) * -1) calc(var(--px) * -1) 0 #8c0f26;
+}
+
+.lever:focus-visible .lever-knob {
+  outline: var(--px) solid var(--cyan);
+  outline-offset: var(--px);
+}
+
+/* The machine is 49 --px wide all in, and --px is itself capped against the
+   viewport, so it fits beside its lever down to 320px. At that width the
+   four-column paytable and coin controls became technically present but too
+   small to read or tap comfortably. Keep the cabinet geometry intact while
+   giving its functional text and controls a mobile-sized presentation. */
+@media (max-width: 360px) {
+  .payglass-title {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+
+  .paytable {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--px);
+    font-size: 9px;
+  }
+
+  .paytable b { font-size: 10px; }
+
+  .wallet { font-size: 9px; }
+
+  .wallet-coin-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--px) * 8);
+    height: calc(var(--px) * 8);
+  }
+
+  .coin-slot { font-size: 9px; }
+  .coin-slot small { font-size: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No spin, no chase, no coin arcs. The machine still plays -- reels snap
+     straight to their result and the payout link still appears -- it just
+     stops moving on its own. */
+  .bulb { animation: none; opacity: 1; }
+  .marquee b { animation: none; }
+  .verdict.hit { animation: none; }
+  .coin-slot.clunk { animation: none; }
+  .wallet-coin { transition: none; }
+  .inserted-coin { animation: none; opacity: 0; }
+  .reel.stopped,
+  .slot.bump,
+  .lever.locked .lever-knob { animation: none; }
+  .coin { animation: coin-still 1200ms steps(1) forwards; }
+  .lever-arm.release,
+  .lever-arm.release .lever-knob { transition: none; }
+
+  @keyframes coin-still {
+    0%, 90% { transform: translate(var(--dx), var(--dy)); opacity: 1; }
+    100% { opacity: 0; }
+  }
+}
