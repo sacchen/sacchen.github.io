@@ -83,12 +83,10 @@ html {
   padding: 20px;
 }
 
-/* The masthead sits in .container on every page, including the wide ones.
-   Without this it floats in an 800px column above a 1400px canvas. */
-.layout-vibes .container,
-.layout-wide .container {
-  max-width: 1400px;
-}
+/* The masthead keeps the same 800px column on every page, wide ones included,
+   so the site name and nav sit in exactly the same spot as you move between
+   pages. On the vibes canvas that leaves the header inset from the images --
+   holding the header still is worth more than matching the canvas edge. */
 
 .site-header {
   margin-bottom: 0;
@@ -190,6 +188,16 @@ h1 {
   padding-bottom: 0.3em;
   line-height: 1.2;
   border-bottom: 1px solid var(--rule);
+}
+
+/* Headings here are normal weight by design, so h2 takes its hierarchy from
+   size and space rather than boldness. The default top margin (0.83em) is too
+   tight to separate sections on a page built out of them, and h1 already owns
+   the horizontal rule -- a second one would compete with it. */
+h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1.5em;
+  line-height: 1.25;
 }
 
 blockquote {
