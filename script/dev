@@ -15,20 +15,32 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 tty_flags=()
 [[ -t 0 ]] && tty_flags=(-it)
 
+# Only serve needs to publish ports. Publishing them for build or check would
+# collide with an already-running server and fail the command.
+ports=()
+
 in_container() {
   podman run --rm "${tty_flags[@]}" \
     -v "$ROOT:/site:Z" \
     -w /site \
     -e BUNDLE_PATH=/site/vendor/bundle \
-    -p 4000:4000 -p 35729:35729 \
+    "${ports[@]}" \
     "$IMAGE" "$@"
 }
 
 case "${1:-serve}" in
   install) in_container bundle install ;;
-  serve)   echo "--> http://127.0.0.1:4000  (use 127.0.0.1, not localhost: rootless podman publishes IPv4 only)"
+  serve)   ports=(-p 4000:4000 -p 35729:35729)
+           echo "--> http://127.0.0.1:4000  (use 127.0.0.1, not localhost: rootless podman publishes IPv4 only)"
            in_container bundle exec jekyll serve --host 0.0.0.0 --livereload ;;
-  build)   in_container bundle exec jekyll build ;;
+  build)   # A running server owns _site; rebuilding it underneath leaves that
+           # server 404ing every file it had already mapped.
+           if podman ps --format '{{.Ports}}' | grep -q '4000->4000'; then
+             echo "dev: a server is already running and owns _site." >&2
+             echo "dev: it rebuilds on save, so you probably want nothing. Otherwise stop it first." >&2
+             exit 1
+           fi
+           in_container bundle exec jekyll build ;;
   check)   in_container ruby script/check_404_slot.rb ;;
   shell)   in_container bash ;;
   *)       in_container "$@" ;;
