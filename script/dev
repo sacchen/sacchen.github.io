@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Run Jekyll in a disposable Ruby 3.3 container -- the version GitHub Pages
+# builds this site with. Nothing is installed on the host.
+#
+#   ./script/dev install   # resolve gems into vendor/bundle
+#   ./script/dev serve     # http://127.0.0.1:4000 with livereload
+#   ./script/dev build     # one-off build into _site/
+#   ./script/dev check     # the 404 slot-odds check CI runs
+#   ./script/dev shell     # poke around inside the container
+set -euo pipefail
+
+IMAGE="docker.io/library/ruby:3.3"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+tty_flags=()
+[[ -t 0 ]] && tty_flags=(-it)
+
+in_container() {
+  podman run --rm "${tty_flags[@]}" \
+    -v "$ROOT:/site:Z" \
+    -w /site \
+    -e BUNDLE_PATH=/site/vendor/bundle \
+    -p 4000:4000 -p 35729:35729 \
+    "$IMAGE" "$@"
+}
+
+case "${1:-serve}" in
+  install) in_container bundle install ;;
+  serve)   echo "--> http://127.0.0.1:4000  (use 127.0.0.1, not localhost: rootless podman publishes IPv4 only)"
+           in_container bundle exec jekyll serve --host 0.0.0.0 --livereload ;;
+  build)   in_container bundle exec jekyll build ;;
+  check)   in_container ruby script/check_404_slot.rb ;;
+  shell)   in_container bash ;;
+  *)       in_container "$@" ;;
+esac
