@@ -20,5 +20,16 @@ jobs:
       - name: Check 404 slot odds
         run: ruby script/check_404_slot.rb
 
+      - uses: oven-sh/setup-bun@v2
+
+      # _analysis/ is generated from notes/analysis/ and committed, because
+      # GitHub Pages runs no plugins and cannot generate it at build time.
+      # Editing a note without re-running the script would publish the old
+      # version of a section with no error anywhere.
+      - name: Check _analysis is current
+        run: |
+          bun script/build-notes
+          git diff --exit-code -- _analysis
+
       - name: Build site
         run: bundle exec jekyll build
