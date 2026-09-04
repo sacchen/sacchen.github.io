@@ -8,7 +8,7 @@ permalink: /about/
 
 I'm Samuel. I study Mathematics and Scientific Computation at UC Davis.
 
-This is where my academic and professional writing goes, and where I point people who want to find my work. Right now I'm reviewing real analysis before the next course in the fall.
+This is where my academic and professional writing goes, and where I point people who want to find my work. Right now I'm [reviewing real analysis](/math/analysis/) before the next course in the fall.
 
 Some things I've made:
 
