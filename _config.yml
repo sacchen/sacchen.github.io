@@ -14,9 +14,12 @@ exclude:
   - prep_images.py
   - vibes_sources.yml
   - vibes_sizes.yml
+  # Development tooling, not site content.
+  - script
 
 # The github-pages gem defaults to jekyll-theme-primer. This site has its own
 # layouts and stylesheet and uses none of it, and primer ships an
 # assets/css/style.scss that competes for the same build output as
 # assets/css/style.css. Turning the theme off removes the collision.
 theme:
+
