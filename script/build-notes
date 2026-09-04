@@ -1,0 +1,217 @@
+#!/usr/bin/env bun
+/*
+ * notes/analysis/*.md  ->  _analysis/*.md
+ *
+ * Three jobs, all of which exist because GitHub Pages runs no plugins:
+ *
+ *   1. Obsidian callouts. `> [!question]` is Obsidian syntax;
+ *      kramdown renders it as a blockquote containing the literal text
+ *      "[!question]". This rewrites it to a div that solution.css styles,
+ *      with markdown="1" so the body stays markdown.
+ *
+ *   2. Line breaks, for the same reason: a single newline is a break in
+ *      Obsidian and nothing in kramdown.
+ *
+ *   3. Math. `$...$` and `$$...$$` are pre-rendered to KaTeX here rather than
+ *      by a script in the browser, so the pages ship no JS -- the same output
+ *      /papers/hog/ has.
+ *
+ * Inline math comes out wrapped in kramdown's {::nomarkdown} because KaTeX's
+ * MathML branch carries the original TeX in an <annotation> element. Without
+ * it kramdown reads a subscript like a_1 + a_2 as emphasis and eats the
+ * underscores. Display math sits in a block-level <div>, which kramdown
+ * already passes through untouched.
+ *
+ * No package manager: KaTeX is one vendored UMD file in script/lib/.
+ *
+ *   ./script/build-notes          rebuild everything
+ *   ./script/build-notes 2-6      rebuild one section
+ */
+
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { join, basename } from "node:path";
+import { createRequire } from "node:module";
+
+const ROOT = new URL("..", import.meta.url).pathname;
+const SRC = join(ROOT, "notes/analysis");
+const OUT = join(ROOT, "_analysis");
+const LIB = join(ROOT, "script/lib/katex.min.js");
+
+if (!existsSync(LIB)) {
+  console.error("build-notes: missing script/lib/katex.min.js");
+  console.error("build-notes: fetch it once with");
+  console.error("  curl -sSL --create-dirs -o script/lib/katex.min.js \\");
+  console.error("    https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js");
+  process.exit(1);
+}
+
+const katex = createRequire(import.meta.url)(LIB);
+
+/* ---------- callouts ---------- */
+
+// Every name here is one Obsidian renders natively, so a note looks the same in
+// the editor as it does on the page. An unknown type is a typo, not something
+// to pass through.
+//
+// question holds the exercise statement and is deliberately the quiet card;
+// colour belongs to what you added, not to what the book said.
+const ICONS = {
+  question: '<circle cx="8" cy="8" r="6.25"/><path d="M6.3 6.2a1.75 1.75 0 1 1 1.7 2.2v1M8 11.5h.01"/>',
+  tip: '<path d="M8 1.75a4 4 0 0 0-2.4 7.2c.4.3.65.75.65 1.25v.3h3.5v-.3c0-.5.25-.95.65-1.25A4 4 0 0 0 8 1.75Z"/><path d="M6.5 13.25h3"/>',
+  warning: '<path d="M8 2.25 14.25 13.5H1.75L8 2.25Z"/><path d="M8 6.5v3M8 11.5h.01"/>',
+  note: '<path d="M4 2.75h5.5L12.25 5.5v7.75H4z"/><path d="M6 8.5h4M6 10.75h2.5"/>',
+};
+
+const SVG_OPEN =
+  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" ' +
+  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+
+function convertCallouts(body, file) {
+  const lines = body.split("\n");
+  const out = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const head = lines[i].match(/^>\s*\[!(\w+)\]\s*(.*)$/);
+    if (!head) {
+      out.push(lines[i]);
+      continue;
+    }
+
+    const type = head[1].toLowerCase();
+    const label = head[2].trim();
+    if (!(type in ICONS)) {
+      throw new Error(
+        file + ': unknown callout type "' + head[1] + '" (have: ' + Object.keys(ICONS).join(", ") + ")"
+      );
+    }
+
+    // Everything on the following "> " lines belongs to the card. The quote
+    // marker comes off; what is left is markdown and stays markdown.
+    const inner = [];
+    while (i + 1 < lines.length && /^>/.test(lines[i + 1])) {
+      inner.push(lines[++i].replace(/^>\s?/, ""));
+    }
+
+    out.push('<div class="callout callout--' + type + '" markdown="1">');
+    if (label) {
+      out.push('<p class="callout-label">' + SVG_OPEN + ICONS[type] + "</svg>" + label + "</p>");
+    }
+    out.push("");
+    out.push(...inner);
+    out.push("</div>");
+  }
+
+  return out.join("\n");
+}
+
+/* ---------- line breaks ---------- */
+
+// Obsidian renders a single newline inside a paragraph as a line break, and
+// kramdown joins the lines instead. Matching Obsidian is what makes the editor
+// a preview: "**Proof.**" on its own line above the argument stays there.
+//
+// Block-level lines are left alone, so a heading, a list item or the HTML a
+// callout was rewritten into does not pick up a stray <br>.
+function keepLineBreaks(body) {
+  const BLOCK = /^\s*(?:#{1,6}\s|>|<|[-*+]\s|\d+[.)]\s|\||```)/;
+  const lines = body.split("\n");
+  let fenced = false;
+
+  return lines
+    .map((line, i) => {
+      if (/^```/.test(line.trim())) fenced = !fenced;
+      const next = lines[i + 1];
+      if (fenced || next === undefined) return line;
+      if (line.trim() === "" || next.trim() === "") return line;
+      if (BLOCK.test(line) || BLOCK.test(next)) return line;
+      return line.replace(/\s*$/, "  ");
+    })
+    .join("\n");
+}
+
+/* ---------- math ---------- */
+
+function renderMath(body, file) {
+  // Code comes out first so a $ inside a fence or inside `code` is left alone.
+  const stash = [];
+  const park = (text) => "%%CODE" + (stash.push(text) - 1) + "%%";
+
+  let s = body.replace(/^```[\s\S]*?^```/gm, park).replace(/`[^`\n]*`/g, park);
+
+  const render = (tex, displayMode) => {
+    try {
+      const html = katex.renderToString(tex.trim(), {
+        displayMode,
+        throwOnError: true,
+        strict: "warn",
+      });
+      return html;
+    } catch (err) {
+      throw new Error(file + ": " + err.message + "\n  in: " + tex.trim());
+    }
+  };
+
+  // The <div> matters twice over: KaTeX's display output is a <span>, so
+  // without it kramdown puts the formula in a <p> whose margins stack with
+  // .katex-display's -- and a block-level HTML element is passed through raw,
+  // which is why display math needs no {::nomarkdown} of its own.
+  s = s.replace(
+    /\$\$([\s\S]+?)\$\$/g,
+    (_, tex) => '\n<div class="math-block">' + render(tex, true) + "</div>\n"
+  );
+  // Inline math is not passed through, so it does. Inside a paragraph kramdown
+  // still reads the TeX in KaTeX's <annotation> and would eat the underscores
+  // of a subscript as emphasis.
+  //
+  // No space just inside the delimiters, which keeps "$5 to $10" out.
+  s = s.replace(
+    /\$(?!\s)((?:[^$\n]|\\\$)+?)(?<!\s)\$/g,
+    (_, tex) => "{::nomarkdown}" + render(tex, false) + "{:/nomarkdown}"
+  );
+
+  return s.replace(/%%CODE(\d+)%%/g, (_, i) => stash[i]);
+}
+
+/* ---------- files ---------- */
+
+function build(file) {
+  const raw = readFileSync(join(SRC, file), "utf8");
+  const parts = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!parts) throw new Error(file + ": no front matter");
+
+  const front = parts[1];
+  const body = parts[2];
+  const converted = renderMath(keepLineBreaks(convertCallouts(body, file)), file);
+
+  // The exercise count on the table of contents is derived from the headings,
+  // not maintained by hand -- one more line of front matter to forget.
+  const exercises = (body.match(/^##\s+Exercise\b/gim) || []).length;
+
+  const out =
+    "---\n" +
+    "# GENERATED by script/build-notes from notes/analysis/" + file + ". Edit that.\n" +
+    front + "\n" +
+    "exercises: " + exercises + "\n" +
+    "---\n\n" +
+    converted.trim() +
+    "\n";
+
+  writeFileSync(join(OUT, file), out);
+  return exercises;
+}
+
+const only = process.argv[2];
+mkdirSync(OUT, { recursive: true });
+
+const files = readdirSync(SRC)
+  .filter((f) => f.endsWith(".md"))
+  .filter((f) => !only || basename(f, ".md") === only);
+
+if (files.length === 0) {
+  console.error(only ? "build-notes: no note named " + only : "build-notes: nothing in notes/analysis/");
+  process.exit(1);
+}
+
+for (const f of files) {
+  console.log("  " + f + "  ->  _analysis/" + f + "  (" + build(f) + " exercises)");
+}

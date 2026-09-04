@@ -16,6 +16,9 @@ exclude:
   - vibes_sizes.yml
   # Development tooling, not site content.
   - script
+  # Obsidian source. script/build-notes turns these into _analysis/; the raw
+  # notes are the input, not a second copy of the site.
+  - notes
 
 # The github-pages gem defaults to jekyll-theme-primer. This site has its own
 # layouts and stylesheet and uses none of it, and primer ships an
@@ -23,3 +26,25 @@ exclude:
 # assets/css/style.css. Turning the theme off removes the collision.
 theme:
 
+# --- Analysis solutions ---
+#
+# One page per section of the book. _data/analysis.yml holds the book's
+# structure and drives both the table of contents at /math/analysis/ and the
+# prev/next links on each page, so a section exists in exactly one place.
+#
+# These files are GENERATED from notes/analysis/ by script/build-notes. Edit
+# the notes, not these -- the script overwrites them.
+collections:
+  analysis:
+    output: true
+    permalink: /math/analysis/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: analysis
+    values:
+      layout: solution
+      extra_css:
+        - /assets/katex/katex.min.css
+        - /assets/css/solution.css

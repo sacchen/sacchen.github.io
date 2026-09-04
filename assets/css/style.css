@@ -133,11 +133,9 @@ main > .container-wide > :first-child {
   text-decoration: none;
 }
 
-/* Six items no longer fit one phone line at a 15px gap, so the nav is a
-   wrap-aware flex row. The tighter column gap keeps it on one line on most
-   phones, and the explicit row gap means that when it does wrap, on a 320px
-   screen say, the second line reads as a deliberate row rather than as
-   crowded text. */
+/* Seven items do not fit one phone line, so the nav is a wrap-aware flex row.
+   The explicit row gap is what makes the wrap acceptable: the second line
+   reads as a deliberate row rather than as crowded text. */
 .site-header nav {
   display: flex;
   flex-wrap: wrap;
@@ -148,11 +146,10 @@ main > .container-wide > :first-child {
   color: var(--soft);
 }
 
-/* Six items still do not fit one phone line at body size: the clamp above puts
-   body text near 17.5px on a 390px screen, so the labels alone run about 300px
-   before any gaps. Stepping the nav down a notch and tightening the gap buys
-   back roughly 70px, enough for one line on most phones. Below about 340px it
-   wraps anyway, which the row gap already handles. */
+/* The clamp above puts body text near 17.5px on a 390px screen, where seven
+   labels run about 350px before any gaps -- past one line whatever the gap is.
+   Stepping the nav down a notch still earns its keep: it holds the wrap to two
+   lines instead of letting a third appear on narrow phones. */
 @media (max-width: 34em) {
   .site-header nav {
     gap: 0.35rem 8px;

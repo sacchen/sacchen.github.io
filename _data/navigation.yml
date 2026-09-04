@@ -2,6 +2,8 @@
   url: /
 - name: About
   url: /about/
+- name: Analysis
+  url: /math/analysis/
 - name: Projects
   url: /projects/
 - name: Papers

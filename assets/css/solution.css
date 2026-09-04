@@ -1,0 +1,191 @@
+/* Analysis solutions -- /math/analysis/ and every section page under it.
+ *
+ * This duplicates about thirty lines of body typography from paper.css rather
+ * than extending it. paper.css says at the top that it is generated: the hog
+ * repo's build-html.js copies over it, so building forty pages on top of it
+ * would mean a rebuild in another repo silently restyling this section. A
+ * generated file is a bad base class.
+ *
+ * What it deliberately does NOT copy is the paper title block. A page titled
+ * "2.6" is a location in a book, not a headline, so the display title, deck and
+ * uppercase byline are replaced by a breadcrumb and a small heading.
+ */
+
+.solution {
+  --ink: #0b0b0b;
+  --soft: #52514e;
+  --faint: #8a8880;
+  --rule: #e6e5e0;
+  --accent: #007acc;
+  --amber: #a86300; /* dark enough to clear 4.5:1 on white; true orange next
+                       to Charter reads as an error state */
+
+  --serif: Charter, "Bitstream Charter", "Iowan Old Style", "Source Serif Pro",
+    Georgia, Cambria, "Times New Roman", serif;
+  --sans: var(--font);
+}
+
+@media (prefers-color-scheme: dark) {
+  .solution {
+    --ink: #ededea;
+    --soft: #c3c2b7;
+    --faint: #8a8880;
+    --rule: #333330;
+    --accent: #3987e5;
+    --amber: #d99a3a;
+  }
+}
+
+.solution {
+  max-width: 40em;
+  margin-inline: auto;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.solution p { margin: 0 0 1.15rem; }
+
+/* One "## Exercise 2.5.5" per problem. style.css sets h2 to 1.5em at normal
+   weight, which is a page heading; here it separates problems inside one, and
+   kramdown gives each an id so a single exercise can be linked to. */
+.solution h2 {
+  margin: 2.75rem 0 1rem;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+}
+
+.solution h2:first-child { margin-top: 0; }
+.solution a { color: var(--accent); }
+.solution strong { font-weight: 650; }
+
+/* ---------- header ---------- */
+
+.sol-header { margin: 1.75rem 0 2.25rem; }
+
+.sol-crumb {
+  margin: 0 0 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.sol-crumb a { color: var(--faint); text-decoration: none; }
+.sol-crumb a:hover { color: var(--ink); text-decoration: none; }
+
+.sol-title {
+  /* style.css underlines every h1 and sets it at 2.4em; this heading carries
+     the section, not the page, so it steps well down and takes its own rule. */
+  margin: 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+}
+
+/* ---------- callouts ---------- */
+
+/* Obsidian's callouts are saturated by default. Here the exercise card is the
+ * quiet neutral one and colour is reserved for the annotations, so the loudest
+ * thing on the page is what I added rather than what the book said.
+ *
+ * One tint per type, mixed against transparent so it darkens a light surface
+ * and lightens a dark one by the same amount -- the same trick style.css uses
+ * for blockquote, and the reason there is no dark-mode copy of these rules.
+ */
+
+.callout {
+  --tint: var(--faint);
+  margin: 1.9rem 0;
+  padding: 0.95rem 1.15rem 0.15rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--tint);
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.06);
+}
+
+@supports (color: color-mix(in srgb, red 50%, transparent)) {
+  .callout { background: color-mix(in srgb, var(--tint) 7%, transparent); }
+}
+
+.callout--idea  { --tint: var(--accent); }
+.callout--stuck { --tint: var(--amber); }
+
+.callout-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 0 0.55rem;
+  font-family: var(--sans);
+  font-size: 0.71rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--tint);
+}
+
+.callout-label svg { width: 0.95em; height: 0.95em; flex: none; }
+.callout > :last-child { margin-bottom: 0.8rem; }
+
+/* ---------- math ---------- */
+
+/* KaTeX is pre-rendered by script/build-notes, so no JS runs here. It draws in
+ * currentColor and follows --ink into dark mode with no override. */
+
+.solution .katex { font-size: 1.06em; }
+
+/* build-notes wraps display math in this so kramdown treats it as a block and
+ * does not put it in a paragraph of its own. The spacing lives on .katex-display
+ * below, so the wrapper contributes none. */
+.solution .math-block { margin: 0; }
+
+/* Long display lines scroll on their own instead of widening the page.
+ * See https://github.com/KaTeX/KaTeX/issues/1023 */
+.solution .katex-display {
+  margin: 1.5rem 0;
+  padding: 0.35rem 0.15rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ---------- footer ---------- */
+
+.sol-attrib {
+  margin: 3rem 0 0;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--faint);
+}
+
+.sol-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+}
+
+.sol-next { text-align: right; }
+
+@media (max-width: 34em) {
+  .solution { font-size: 1rem; }
+  .sol-nav { flex-direction: column; gap: 0.5rem; }
+  .sol-next { text-align: left; }
+}

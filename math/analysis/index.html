@@ -1,0 +1,35 @@
+---
+layout: default
+title: Real analysis
+permalink: /math/analysis/
+---
+
+<h1>Real analysis</h1>
+
+{% comment %}
+  Only sections that have a page are listed, so this grows rather than filling
+  in. _data/analysis.yml is still what orders it: sorting on the section number
+  as a string would put 2.10 before 2.9, and the chapter titles live there too.
+
+  The rows are captured first so a chapter nobody has started yet does not
+  leave a heading with an empty list under it.
+
+  The list is .index, the same one the home page, papers and projects use.
+{% endcomment %}
+{% for ch in site.data.analysis.chapters %}
+  {% capture rows %}
+    {% for s in ch.sections %}
+      {% assign doc = site.analysis | where: "section", s.n | first %}
+      {% if doc %}
+      <li>
+        <a href="{{ doc.url }}">&sect;{{ s.n }} {{ doc.title }}</a><span class="index-date">{{ doc.exercises }} {% if doc.exercises == 1 %}exercise{% else %}exercises{% endif %}</span>
+      </li>
+      {% endif %}
+    {% endfor %}
+  {% endcapture %}
+  {% assign trimmed = rows | strip %}
+  {% if trimmed != "" %}
+    <h2 id="chapter-{{ ch.n }}">{{ ch.n }} &middot; {{ ch.title }}</h2>
+    <ul class="index">{{ rows }}</ul>
+  {% endif %}
+{% endfor %}

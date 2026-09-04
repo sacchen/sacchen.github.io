@@ -1,0 +1,62 @@
+---
+layout: default
+---
+{% comment %}
+  One section of the book. The header is deliberately not the paper header:
+  a page titled "2.6" is a location, not a headline, so it gets a breadcrumb
+  and a small title rather than a display title, a deck and a byline.
+
+  Prev/next walks _data/analysis.yml in book order and keeps only the sections
+  that have a page, so the links skip gaps instead of dead-ending on them. The
+  records are joined on "~" and their fields on "|" -- both characters that
+  cannot appear in a section number or title, unlike the comma.
+{% endcomment %}
+
+{% assign chapter_n = page.section | split: "." | first %}
+{% capture published %}{% for ch in site.data.analysis.chapters %}{% for s in ch.sections %}{% assign doc = site.analysis | where: "section", s.n | first %}{% if doc %}{{ s.n }}|{{ doc.title }}|{{ doc.url }}~{% endif %}{% endfor %}{% endfor %}{% endcapture %}
+{% assign records = published | split: "~" %}
+{% for record in records %}
+  {% assign fields = record | split: "|" %}
+  {% if fields[0] == page.section %}{% assign here = forloop.index0 %}{% endif %}
+{% endfor %}
+
+<article class="solution">
+
+  <header class="sol-header">
+    <p class="sol-crumb">
+      <a href="/math/analysis/">{{ site.data.analysis.book }}</a>
+      {% comment %}ch.n is a number in the YAML and page.section splits to a
+      string, and Liquid's == does not cross that gap.{% endcomment %}
+      {% for ch in site.data.analysis.chapters %}{% assign chn = ch.n | append: "" %}{% if chn == chapter_n %}
+        &middot; <a href="/math/analysis/#chapter-{{ ch.n }}">Chapter {{ ch.n }}</a>
+      {% endif %}{% endfor %}
+      &middot; &sect;{{ page.section }}
+    </p>
+    <h1 class="sol-title">{{ page.title }}</h1>
+  </header>
+
+  {{ content }}
+
+  <p class="sol-attrib">
+    {{ site.data.analysis.author }}, <em>{{ site.data.analysis.book }}</em>,
+    {{ site.data.analysis.edition }}.
+  </p>
+
+  {% assign before = here | minus: 1 %}
+  {% assign after = here | plus: 1 %}
+  {% comment %}The first section published has neither neighbour. Rendering an
+  empty <nav> then leaves a rule across the page under the attribution.{% endcomment %}
+  {% if here > 0 or after < records.size %}
+    <nav class="sol-nav">
+      {% if here > 0 %}
+        {% assign p = records[before] | split: "|" %}
+        <a class="sol-prev" href="{{ p[2] }}">&lsaquo; &sect;{{ p[0] }} {{ p[1] }}</a>
+      {% else %}<span></span>{% endif %}
+      {% if after < records.size %}
+        {% assign n = records[after] | split: "|" %}
+        <a class="sol-next" href="{{ n[2] }}">&sect;{{ n[0] }} {{ n[1] }} &rsaquo;</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+
+</article>
